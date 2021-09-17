@@ -1,13 +1,17 @@
 #![no_std]
 #![no_main]
 
-use panic_halt as _;
+extern crate cortex_m;
+extern crate cortex_m_semihosting;
+extern crate nb;
+
+extern crate panic_halt;
 
 extern crate feather_m4 as bsp;
-use bsp::entry;
+
 use bsp::hal;
-use bsp::timer::SpinTimer;
 use bsp::Pins;
+use bsp::{entry, spi_master};
 use core::fmt::Debug;
 use core::ops::{AddAssign, Not, SubAssign};
 use hal::clock::GenericClockController;
@@ -16,11 +20,8 @@ use hal::pac::CorePeripherals;
 use hal::pac::Peripherals;
 use hal::prelude::*;
 use num_traits::PrimInt;
-use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite,
-};
-use ws2812_timer_delay as ws2812;
+use smart_leds::{hsv::{hsv2rgb, Hsv}, SmartLedsWrite, White, RGB, RGBW, brightness, RGB8};
+use ws2812_spi::prerendered::Ws2812;
 
 /// The direction of the changing brightness.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -126,7 +127,7 @@ static RESTFUL_ORANGE: HsColor<u8> = HsColor {
 #[entry]
 fn main() -> ! {
     let config = Config {
-        brightness_range: BrightnessRange::new(1, 250, 1),
+        brightness_range: BrightnessRange::new(75, 200, 1),
         delay_ms: 8,
         neopixel_color: RESTFUL_ORANGE,
         spin_timer_cycles: 4,
@@ -144,20 +145,37 @@ fn main() -> ! {
 
     let mut delay = Delay::new(core.SYST, &mut clocks);
     let mut pins = Pins::new(peripherals.PORT);
-    let ws_data_pin = pins.neopixel.into_push_pull_output(&mut pins.port);
 
-    let timer = SpinTimer::new(config.spin_timer_cycles);
+    let spi = spi_master(
+        &mut clocks,
+        3_000_000u32.hz(),
+        peripherals.SERCOM1,
+        &mut peripherals.MCLK,
+        pins.sck,
+        pins.mosi,
+        pins.miso,
+        &mut pins.port,
+    );
 
-    let mut neopixel = ws2812::Ws2812::new(timer, ws_data_pin);
+    const NUM_LEDS: usize = 8;
+    let mut buffer: [u8; 16 * NUM_LEDS + 40] = [0; 16 * NUM_LEDS + 40];
+    let mut ws = Ws2812::new_sk6812w(spi, &mut buffer);
 
     loop {
         for j in config.brightness_range {
-            let colors = [hsv2rgb(Hsv {
+            let rgb: RGB<u8> = hsv2rgb(Hsv {
                 hue: config.neopixel_color.hue,
                 sat: config.neopixel_color.saturation,
                 val: j,
-            })];
-            neopixel.write(colors.iter().cloned()).unwrap();
+            });
+            let rgbw: RGBW<u8> = RGBW {
+                r: rgb.r,
+                g: rgb.g,
+                b: rgb.b,
+                a: White(j),
+            };
+            let data = [rgbw; NUM_LEDS];
+            ws.write(data.iter().cloned()).unwrap();
             delay.delay_ms(config.delay_ms);
         }
     }
