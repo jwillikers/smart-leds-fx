@@ -9,28 +9,30 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-:Adafruit-Feather-M4-Express: https://www.adafruit.com/product/3857[Adafruit Feather M4 Express]
-:Arm-Cortex-M4: https://developer.arm.com/ip-products/processors/cortex-m/cortex-m4[Arm Cortex-M4]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
-:ATSAMD51J19: https://www.microchip.com/en-us/product/ATSAMD51J19A#Similar%20Devices[ATSAMD51J19]
-:atsamd-rs: https://github.com/atsamd-rs/atsamd[atsamd-rs]
 :cargo-hf2: https://crates.io/crates/cargo-hf2[cargo-hf2]
 :Fedora: https://getfedora.org/[Fedora]
 :Fedora-Silverblue: https://silverblue.fedoraproject.org/[Fedora Silverblue]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
 :Python: https://www.python.org/[Python]
 :rustup: https://rustup.rs/[rustup]
 :Rouge: https://rouge.jneen.net/[Rouge]
 :Ruby: https://www.ruby-lang.org/en/[Ruby]
 :Rust: https://www.rust-lang.org/[Rust]
+:RV-Link: https://gitee.com/zoomdy/RV-LINK[RV-LINK]
+:SiPEED-Longan-Nano: http://longan.sipeed.com/en/[SiPEED Longan Nano]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
-:ws2812-timer-delay: https://github.com/smart-leds-rs/ws2812-timer-delay-rs[ws2812-timer-delay]
+:ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
-A _{soft-blink}_ effect for the onboard {Neopixel} on the {Adafruit-Feather-M4-Express} written in {Rust}.
+A _{soft-blink}_ effect for {Neopixel} LED's using on the {SiPEED-Longan-Nano} written in {Rust}.
+
+// todo Document RV-LINK usage.
+// todo Document OpenOCD usage with the SiPEED debugger.
 
 == Setup
 
@@ -64,11 +66,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fish_add_path ~/.cargo/bin
 ----
 
-. Install the Rust toolchain for the {ATSAMD51J19} microcontroller, an {Arm-Cortex-M4} with a dedicated floating point unit.
+. Install the Rust toolchain for the GD32 microcontroller, a RISC-V IMAC.
 +
 [source,sh]
 ----
-rustup target add thumbv7em-none-eabihf
+rustup target add riscv32imac-unknown-none-elf
 ----
 
 === hf2
@@ -101,8 +103,6 @@ cargo hf2 --release
 == Todo
 
 * Improve power consumption by using sleep modes and disabling unused peripherals.
-* Use _RTIC_ making it easier to create other tasks.
-* Port to other boards like the Qt Py.
 
 == Contributing
 
@@ -115,19 +115,19 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
-* {atsamd-rs}
 * {cargo-hf2}
 * {Fedora}
 * {Fedora-Silverblue}
 * {fish}
 * {Git}
 * {Linux}
+* {longan-nano-hal}
 * {Python}
 * {Rouge}
 * {Ruby}
 * {Rust}
 * {smart-leds}
-* {ws2812-timer-delay}
+* {ws2812-spi-rs}
 
 == Code of Conduct
 

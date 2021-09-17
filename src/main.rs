@@ -1,27 +1,24 @@
 #![no_std]
 #![no_main]
 
-extern crate cortex_m;
-extern crate cortex_m_semihosting;
 extern crate nb;
 
 extern crate panic_halt;
 
-extern crate feather_m4 as bsp;
+use riscv_rt::entry;
+use longan_nano::hal::{pac, prelude::*};
+use longan_nano::led::{Led, rgb};
+use longan_nano::hal::delay::McycleDelay;
+use longan_nano::hal::spi::Pins;
 
-use bsp::hal;
-use bsp::Pins;
-use bsp::{entry, spi_master};
 use core::fmt::Debug;
 use core::ops::{AddAssign, Not, SubAssign};
-use hal::clock::GenericClockController;
-use hal::delay::Delay;
-use hal::pac::CorePeripherals;
-use hal::pac::Peripherals;
-use hal::prelude::*;
 use num_traits::PrimInt;
 use smart_leds::{hsv::{hsv2rgb, Hsv}, SmartLedsWrite, White, RGB, RGBW, brightness, RGB8};
-use ws2812_spi::prerendered::Ws2812;
+// use ws2812_spi::prerendered::Ws2812;
+use ws2812_spi::Ws2812;
+use longan_nano::hal::spi::Spi;
+use embedded_hal::spi::MODE_0;
 
 /// The direction of the changing brightness.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -127,39 +124,50 @@ static RESTFUL_ORANGE: HsColor<u8> = HsColor {
 #[entry]
 fn main() -> ! {
     let config = Config {
-        brightness_range: BrightnessRange::new(75, 200, 1),
+        brightness_range: BrightnessRange::new(1, 254, 1),
         delay_ms: 8,
         neopixel_color: RESTFUL_ORANGE,
         spin_timer_cycles: 4,
     };
+    let dp = pac::Peripherals::take().unwrap();
+    let mut rcu = dp
+        .RCU
+        .configure()
+        .ext_hf_clock(8.mhz())
+        .sysclk(108.mhz())
+        .freeze();
+    let mut afio = dp.AFIO.constrain(&mut rcu);
+    // let mut rcu = dp.RCU.configure().freeze();
 
-    let mut peripherals = Peripherals::take().unwrap();
-    let core = CorePeripherals::take().unwrap();
-    let mut clocks = GenericClockController::with_external_32kosc(
-        peripherals.GCLK,
-        &mut peripherals.MCLK,
-        &mut peripherals.OSC32KCTRL,
-        &mut peripherals.OSCCTRL,
-        &mut peripherals.NVMCTRL,
-    );
+    let gpioa = dp.GPIOA.split(&mut rcu);
+    // let gpioc = dp.GPIOC.split(&mut rcu);
 
-    let mut delay = Delay::new(core.SYST, &mut clocks);
-    let mut pins = Pins::new(peripherals.PORT);
+    let mut delay = McycleDelay::new(&rcu.clocks);
 
-    let spi = spi_master(
-        &mut clocks,
-        3_000_000u32.hz(),
-        peripherals.SERCOM1,
-        &mut peripherals.MCLK,
-        pins.sck,
-        pins.mosi,
-        pins.miso,
-        &mut pins.port,
-    );
+    let sck = gpioa.pa5.into_alternate_push_pull();
+    let miso = gpioa.pa6.into_floating_input();
+    let mosi = gpioa.pa7.into_alternate_push_pull();
+
+    let spi = Spi::spi0(dp.SPI0, (sck, miso, mosi), &mut afio, MODE_0, 3_000_000.hz(), &mut rcu);
+
+    // let mut delay = Delay::new(core.SYST, &mut clocks);
+    // let mut pins = Pins::new(peripherals.PORT);
+    //
+    // let spi = spi_master(
+    //     &mut clocks,
+    //     3_000_000u32.hz(),
+    //     peripherals.SERCOM1,
+    //     &mut peripherals.MCLK,
+    //     pins.sck,
+    //     pins.mosi,
+    //     pins.miso,
+    //     &mut pins.port,
+    // );
 
     const NUM_LEDS: usize = 8;
-    let mut buffer: [u8; 16 * NUM_LEDS + 40] = [0; 16 * NUM_LEDS + 40];
-    let mut ws = Ws2812::new_sk6812w(spi, &mut buffer);
+    // let mut buffer: [u8; 16 * NUM_LEDS + 40] = [0; 16 * NUM_LEDS + 40];
+    // let mut ws = Ws2812::new_sk6812w(spi, &mut buffer);
+    let mut ws = Ws2812::new_sk6812w(spi);
 
     loop {
         for j in config.brightness_range {
@@ -172,7 +180,7 @@ fn main() -> ! {
                 r: rgb.r,
                 g: rgb.g,
                 b: rgb.b,
-                a: White(j),
+                a: White(j / 20),
             };
             let data = [rgbw; NUM_LEDS];
             ws.write(data.iter().cloned()).unwrap();
