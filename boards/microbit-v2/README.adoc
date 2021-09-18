@@ -1,4 +1,4 @@
-= Smart LEDs FX
+= micro:bit v2
 Jordan Williams <jordan@jwillikers.com>
 :experimental:
 :icons: font
@@ -23,17 +23,9 @@ endif::[]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
-A lighting effects library built on the {smart-leds} library.
+A _{soft-blink}_ effect for {Neopixel} LED's using on the BBC micro:bit v2.
 
-== Effects
-
-As of right now, the only effect is a simple {soft-blink}.
-
-== Examples
-
-Examples for several boards cna be found in the link:boards[boards] directory.
-
-=== Setup
+== Setup
 
 . First, clone the repository.
 +
@@ -46,10 +38,10 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 +
 [source,sh]
 ----
-cd smart-leds-fx
+cd smart-leds-fx/boards/microbit-v2
 ----
 
-. Install {rustup} and {Rust}.
+. Install {rustup} and Rust.
 +
 [source,sh]
 ----
@@ -63,21 +55,39 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fish_add_path ~/.cargo/bin
 ----
 
-. Install the Rust toolchain for the GD32 microcontroller, a RISC-V IMAC.
+. Install the Rust toolchain for the micro:bit v2.
 +
 [source,sh]
 ----
-rustup target add riscv32imac-unknown-none-elf
+rustup target add thumbv7em-none-eabihf
+----
+
+. Install the flip-link and probe-run programs for flashing the board.
++
+[source,sh]
+----
+cargo install flip-link probe-run
+----
+
+. Attach your computer to the micro:bit's micro USB port.
+
+== Run
+
+. Use the run command to build, flash, and launch an example.
++
+[source,sh]
+----
+cargo run --example soft-blink-neopixel-strip
 ----
 
 == Todo
 
-* Improve power consumption by using sleep modes and disabling unused peripherals for the examples.
+* Improve power consumption by using sleep modes and disabling unused peripherals.
 
 == Contributing
 
 Contributions in the form of issues, feedback, and even pull requests are welcome.
-Make sure to adhere to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct].
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
 
 == Open Source Software
 
@@ -97,14 +107,14 @@ Several of these projects are enumerated below.
 
 == Code of Conduct
 
-Refer to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
 
 == License
 
 Licensed under either of
 
-* Apache License, Version 2.0 (link:LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license (link:LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
 
 at your option.
 

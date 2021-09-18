@@ -1,4 +1,4 @@
-= Smart LEDs FX
+= Longan Nano
 Jordan Williams <jordan@jwillikers.com>
 :experimental:
 :icons: font
@@ -10,46 +10,49 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:cargo-hf2: https://crates.io/crates/cargo-hf2[cargo-hf2]
+:Fedora: https://getfedora.org/[Fedora]
+:Fedora-Silverblue: https://silverblue.fedoraproject.org/[Fedora Silverblue]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
 :Python: https://www.python.org/[Python]
 :rustup: https://rustup.rs/[rustup]
 :Rouge: https://rouge.jneen.net/[Rouge]
 :Ruby: https://www.ruby-lang.org/en/[Ruby]
 :Rust: https://www.rust-lang.org/[Rust]
+:RV-Link: https://gitee.com/zoomdy/RV-LINK[RV-LINK]
+:SiPEED-Longan-Nano: http://longan.sipeed.com/en/[SiPEED Longan Nano]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
-A lighting effects library built on the {smart-leds} library.
+A _{soft-blink}_ effect for {Neopixel} LED's using on the {SiPEED-Longan-Nano} written in {Rust}.
 
-== Effects
+// todo Document RV-LINK usage.
+// todo Document OpenOCD usage with the SiPEED debugger.
 
-As of right now, the only effect is a simple {soft-blink}.
-
-== Examples
-
-Examples for several boards cna be found in the link:boards[boards] directory.
-
-=== Setup
+== Setup
 
 . First, clone the repository.
 +
 [source,sh]
 ----
-git clone https://github.com/jwillikers/smart-leds-fx.git
+git clone https://github.com/jwillikers/neopixel-soft-blink.git
 ----
 
 . Change to the project's directory.
 +
 [source,sh]
 ----
-cd smart-leds-fx
+cd neopixel-soft-blink
 ----
 
-. Install {rustup} and {Rust}.
+=== Rust
+
+. Install {rustup} and Rust.
 +
 [source,sh]
 ----
@@ -70,9 +73,36 @@ fish_add_path ~/.cargo/bin
 rustup target add riscv32imac-unknown-none-elf
 ----
 
+=== hf2
+
+Install the {cargo-hf2} utility for flashing the board.
+
+[source,sh]
+----
+cargo install cargo-hf2
+----
+
+== Development
+
+. Build with the eponymous command.
++
+[source,sh]
+----
+cargo build
+----
+
+. Double-click the onboard reset button on the Feather M4 Express.
+
+. Flash the board by running `cargo-hf2`.
++
+[source,sh]
+----
+cargo hf2 --release
+----
+
 == Todo
 
-* Improve power consumption by using sleep modes and disabling unused peripherals for the examples.
+* Improve power consumption by using sleep modes and disabling unused peripherals.
 
 == Contributing
 
@@ -85,9 +115,13 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
+* {cargo-hf2}
+* {Fedora}
+* {Fedora-Silverblue}
 * {fish}
 * {Git}
 * {Linux}
+* {longan-nano-hal}
 * {Python}
 * {Rouge}
 * {Ruby}
@@ -101,12 +135,7 @@ Refer to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
 
 == License
 
-Licensed under either of
-
-* Apache License, Version 2.0 (link:LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license (link:LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
-
-at your option.
+This repository is licensed under the https://www.gnu.org/licenses/gpl-3.0.html[GPLv3], a copy of which is provided in the link:LICENSE.adoc[license file].
 
 © 2021 Jordan Williams
 

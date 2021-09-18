@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../smart-leds-fx">
+      <sourceFolder url="file://$MODULE_DIR$/../smart-leds-fx/boards" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../smart-leds-fx/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../smart-leds-fx/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
