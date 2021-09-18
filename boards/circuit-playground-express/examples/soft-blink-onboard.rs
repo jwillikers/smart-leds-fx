@@ -5,21 +5,19 @@ use cortex_m_rt::entry;
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
 
-use microbit::{
-    hal::{
-        gpio::{p0::Parts, Level},
-        prelude::*,
-        spi, Timer,
-    },
-    Peripherals,
-};
+use circuit_playground_express as hal;
+use hal::clock::GenericClockController;
+use hal::delay::Delay;
+use hal::pac::{CorePeripherals, Peripherals};
+use hal::prelude::*;
+use hal::timer::*;
 
 use embedded_time::duration::*;
 use smart_leds::{
     hsv::{hsv2rgb, Hsv},
     SmartLedsWrite, RGB,
 };
-use ws2812_spi::Ws2812;
+use ws2812_timer_delay as ws2812;
 
 use smart_leds_fx::colors::HsColor;
 use smart_leds_fx::colors::RESTFUL_ORANGE;
@@ -31,25 +29,25 @@ fn main() -> ! {
 
     const DELAY: Milliseconds<u32> = Milliseconds::<u32>(8);
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
-    const NUM_LEDS: usize = 30;
+    const NUM_LEDS: usize = 10;
     debug_assert_ne!(NUM_LEDS, 0);
 
     let brightness_range = BrightnessRange::new(1, 254, 1);
 
-    let dp = Peripherals::take().unwrap();
-    let mut delay = Timer::new(dp.TIMER0);
-    let port0 = Parts::new(dp.P0);
-    let sck = port0.p0_17.into_push_pull_output(Level::Low).degrade();
-    let mosi = port0.p0_13.into_push_pull_output(Level::Low).degrade();
-    let miso = port0.p0_01.into_floating_input().degrade();
-    let pins = spi::Pins {
-        sck,
-        miso: Some(miso),
-        mosi: Some(mosi),
-    };
-    let spi = spi::Spi::new(dp.SPI0, pins, spi::Frequency::M2, spi::MODE_0);
+    let mut peripherals = Peripherals::take().unwrap();
+    let core = CorePeripherals::take().unwrap();
+    let mut clocks = GenericClockController::with_internal_32kosc(
+        peripherals.GCLK,
+        &mut peripherals.PM,
+        &mut peripherals.SYSCTRL,
+        &mut peripherals.NVMCTRL,
+    );
+    let mut pins = hal::Pins::new(peripherals.PORT);
+    let mut delay = Delay::new(core.SYST, &mut clocks);
 
-    let mut ws = Ws2812::new(spi);
+    let ws_data_pin = pins.neopixel.into_push_pull_output(&mut pins.port);
+    let timer = SpinTimer::new(3);
+    let mut ws = ws2812::Ws2812::new(timer, ws_data_pin);
 
     loop {
         for j in brightness_range {

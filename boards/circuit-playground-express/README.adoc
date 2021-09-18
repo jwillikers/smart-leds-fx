@@ -1,4 +1,4 @@
-= micro:bit v2
+= Circuit Playground Express Examples
 Jordan Williams <jordan@jwillikers.com>
 :experimental:
 :icons: font
@@ -9,14 +9,17 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:Adafruit: https://www.adafruit.com/[Adafruit]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:atsamd-rs-atsamd: https://github.com/atsamd-rs/atsamd/[atsamd-rs/atsamd]
 :cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
+:cargo-hf2: https://github.com/jacobrosenthal/hf2-rs[cargo-hf2]
+:Circuit-Playground-Express: https://learn.adafruit.com/adafruit-circuit-playground-express[Circuit Playground Express]
+:Circuit-Playground-Express-M0-Wiring: https://learn.adafruit.com/how-to-program-samd-bootloaders/circuit-playground-express-m0-wiring[Circuit Playground Express M0 Wiring]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
-:BBC-microbit: https://microbit.org/[micro:bit]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
-:nrf-rs-microbit: https://github.com/nrf-rs/microbit/[nrf-rs/microbit]
 :probe-rs: https://probe.rs/[probe-rs]
 :Python: https://www.python.org/[Python]
 :Rouge: https://rouge.jneen.net/[Rouge]
@@ -25,13 +28,10 @@ endif::[]
 :rustup: https://rustup.rs/[rustup]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
-:ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
-Examples of lighting effects for the {BBC-microbit} v2.
+Examples of lighting effects for {Adafruit}'s {Circuit-Playground-Express}.
 
 == Setup
-
-The instructions provided here are meant for users of Fedora Linux.
 
 . First, clone the repository.
 +
@@ -44,15 +44,45 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 +
 [source,sh]
 ----
-cd smart-leds-fx/boards/microbit-v2
+cd smart-leds-fx/boards/circuit-playground-express
 ----
 
-. Install the Rust toolchain for the micro:bit v2.
+. Install the Rust toolchain for the Circuit Playground Express.
 +
 [source,sh]
 ----
-rustup target add thumbv7em-none-eabihf
+rustup target add thumbv6m-none-eabi
 ----
+
+== Program
+
+The Circuit Playground Express can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
+
+=== UF2
+
+{cargo-hf2} makes it easy to convert and install programs to the board using the on-board UF2 bootloader.
+
+. Install the {cargo-hf2} utility.
++
+[source,sh]
+----
+cargo install cargo-hf2
+----
+
+. Attach the Circuit Playground Express to your computer using the micro USB port.
+
+. Double click the reset button to put the board to put in bootloader mode.
+
+. Flash the board using the `hf2` Cargo subcommand.
++
+[source,sh]
+----
+cargo hf2 --example soft-blink-onboard
+----
+
+=== SWD
+
+For instructions on connecting to the physical SWD interface on the Circuit Playground Express, see the article {Circuit-Playground-Express-M0-Wiring}.
 
 . Install required packages for {cargo-embed}.
 +
@@ -89,18 +119,18 @@ sudo udevadm control --reload
 sudo udevadm trigger
 ----
 
-. Attach your computer to the micro:bit's micro USB port.
+. Attach the Circuit Playground Express to your computer using both the micro USB port, for power, and the SWD pins.
 
-. Use cargo-embed to build, flash, and launch an example.
+. Use cargo-embed to flash an example.
 +
 [source,sh]
 ----
-cargo embed --example soft-blink-neopixel-strip
+cargo embed --example soft-blink-onboard
 ----
 
 == Examples
 
-soft-blink-neopixel-strip:: A _{soft-blink}_ effect for a strip of 30 {Neopixel} LED's using the the SPI MOSI pin, pin #15, of the micro:bit.
+soft-blink-onboard:: A _{soft-blink}_ effect for the ten on-board {Neopixel} LED's.
 
 == Todo
 
@@ -118,17 +148,17 @@ Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
 * {cargo-embed}
+* {cargo-hf2}
 * {fish}
 * {Git}
 * {Linux}
-* {nrf-rs-microbit}
+* {atsamd-rs-atsamd}
 * {probe-rs}
 * {Python}
 * {Rouge}
 * {Ruby}
 * {Rust}
 * {smart-leds}
-* {ws2812-spi-rs}
 
 == Code of Conduct
 
