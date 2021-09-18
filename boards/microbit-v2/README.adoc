@@ -14,11 +14,12 @@ endif::[]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
+:probe-rs: https://probe.rs/[probe-rs]
 :Python: https://www.python.org/[Python]
-:rustup: https://rustup.rs/[rustup]
 :Rouge: https://rouge.jneen.net/[Rouge]
 :Ruby: https://www.ruby-lang.org/en/[Ruby]
 :Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
@@ -26,6 +27,8 @@ endif::[]
 A _{soft-blink}_ effect for {Neopixel} LED's using on the BBC micro:bit v2.
 
 == Setup
+
+The instructions provided here are meant for users of Fedora Linux.
 
 . First, clone the repository.
 +
@@ -73,20 +76,39 @@ sudo dnf -y install libusbx-devel systemd-devel
 +
 [source,sh]
 ----
-cargo install flip-link probe-run
+cargo install cargo-embed cargo-flash flip-link probe-run
+----
+
+. Install the required Udev rules.
++
+[source,sh]
+----
+wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+----
+
+. Load the new rules.
++
+[source,sh]
+----
+sudo udevadm control --reload
+----
+
+. Apply the new rules.
++
+[source,sh]
+----
+sudo udevadm trigger
 ----
 
 . Attach your computer to the micro:bit's micro USB port.
 
-// todo Udev
-
 == Run
 
-. Use the run command to build, flash, and launch an example.
+. Use cargo-embed to build, flash, and launch an example.
 +
 [source,sh]
 ----
-cargo run --example soft-blink-neopixel-strip
+cargo embed --example soft-blink-neopixel-strip
 ----
 
 == Todo
