@@ -2,7 +2,7 @@
 #![no_main]
 
 use cortex_m_rt::entry;
-use panic_halt as _;
+use panic_probe as _;
 
 use microbit::{
     hal::{

@@ -13,7 +13,7 @@ repository = "https://github.com/jwillikers/smart-leds-fx"
 cortex-m-rt = "0.6.2"
 defmt = "0.2.0"
 embedded-time = "0.12.0"
-panic-halt = "0.2"
+panic-probe = { version = "0.2", features = ["print-rtt"] }
 microbit-v2 = "0.11.0"
 nb = "0.1"
 smart-leds = "0.3.0"

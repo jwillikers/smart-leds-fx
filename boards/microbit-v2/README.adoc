@@ -62,6 +62,13 @@ fish_add_path ~/.cargo/bin
 rustup target add thumbv7em-none-eabihf
 ----
 
+. Install required packages.
++
+[source,sh]
+----
+sudo dnf -y install libusbx-devel systemd-devel
+----
+
 . Install the flip-link and probe-run programs for flashing the board.
 +
 [source,sh]
@@ -70,6 +77,8 @@ cargo install flip-link probe-run
 ----
 
 . Attach your computer to the micro:bit's micro USB port.
+
+// todo Udev
 
 == Run
 
