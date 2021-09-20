@@ -1,0 +1,180 @@
+= Circuit Playground Bluefruit Examples
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Adafruit: https://www.adafruit.com/[Adafruit]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
+:cargo-hf2: https://github.com/jacobrosenthal/hf2-rs[cargo-hf2]
+:Circuit-Playground-Bluefruit: https://learn.adafruit.com/adafruit-circuit-playground-bluefruit[Circuit Playground Bluefruit]
+:Circuit-Playground-Express-M0-Wiring: https://learn.adafruit.com/how-to-program-samd-bootloaders/circuit-playground-express-m0-wiring[Circuit Playground Express M0 Wiring]
+:fish: https://fishshell.com/[fish]
+:Git: https://git-scm.com/[Git]
+:Linux: https://www.linuxfoundation.org/[Linux]
+:Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
+:nrf-hal: https://github.com/nrf-rs/nrf-hal[nrf-hal]
+:probe-rs: https://probe.rs/[probe-rs]
+:Python: https://www.python.org/[Python]
+:Rouge: https://rouge.jneen.net/[Rouge]
+:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+
+Examples of lighting effects for {Adafruit}'s {Circuit-Playground-Bluefruit}.
+
+== Setup
+
+. First, clone the repository.
++
+[source,sh]
+----
+git clone https://github.com/jwillikers/smart-leds-fx.git
+----
+
+. Change to the project's directory.
++
+[source,sh]
+----
+cd smart-leds-fx/boards/circuit-playground-bluefruit
+----
+
+. Install the Rust toolchain for the Circuit Playground Bluefruit.
++
+[source,sh]
+----
+rustup target add thumbv7em-none-eabihf
+----
+
+== Program
+
+The Circuit Playground Bluefruit can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
+
+=== UF2
+
+{cargo-hf2} makes it easy to convert and install programs to the board using the on-board UF2 bootloader.
+
+. Install the {cargo-hf2} utility.
++
+[source,sh]
+----
+cargo install cargo-hf2
+----
+
+. Attach the Circuit Playground Bluefruit to your computer using the micro USB port.
+
+. Double click the reset button to put the board to put in bootloader mode.
+
+. Flash the board using the `hf2` Cargo subcommand.
++
+[source,sh]
+----
+cargo hf2 --example soft-blink-onboard
+----
+
+=== SWD
+
+For instructions on connecting to the physical SWD interface on the Circuit Playground Express, see the article {Circuit-Playground-Express-M0-Wiring}.
+
+. Install required packages for {cargo-embed}.
++
+[source,sh]
+----
+sudo dnf -y install libusbx-devel systemd-devel
+----
+
+. Install the `cargo-embed` utility.
++
+[source,sh]
+----
+cargo install cargo-embed
+----
+
+. Install the required Udev rules.
++
+[source,sh]
+----
+wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+----
+
+. Load the new rules.
++
+[source,sh]
+----
+sudo udevadm control --reload
+----
+
+. Apply the new rules.
++
+[source,sh]
+----
+sudo udevadm trigger
+----
+
+. Attach the Circuit Playground Bluefruit to your computer using both the micro USB port, for power, and the SWD pins.
+
+. Use cargo-embed to flash an example.
++
+[source,sh]
+----
+cargo embed --example soft-blink-onboard
+----
+
+== Examples
+
+soft-blink-onboard:: A _{soft-blink}_ effect for the ten on-board {Neopixel} LED's.
+
+== Todo
+
+* Improve power consumption by using sleep modes and disabling unused peripherals.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {cargo-embed}
+* {cargo-hf2}
+* {fish}
+* {Git}
+* {Linux}
+* {nrf-hal}
+* {probe-rs}
+* {Python}
+* {Rouge}
+* {Ruby}
+* {Rust}
+* {smart-leds}
+
+== Code of Conduct
+
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+Licensed under either of
+
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+
+at your option.
+
+© 2021 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]
