@@ -1,4 +1,4 @@
-= Longan Nano
+= Longan Nano v1.0
 Jordan Williams <jordan@jwillikers.com>
 :experimental:
 :icons: font
@@ -10,7 +10,7 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
-:cargo-hf2: https://crates.io/crates/cargo-hf2[cargo-hf2]
+:dfu-util: http://dfu-util.sourceforge.net/[dfu-util]
 :Fedora: https://getfedora.org/[Fedora]
 :Fedora-Silverblue: https://silverblue.fedoraproject.org/[Fedora Silverblue]
 :fish: https://fishshell.com/[fish]
@@ -18,6 +18,8 @@ endif::[]
 :Linux: https://www.linuxfoundation.org/[Linux]
 :Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
+:OpenOCD: https://openocd.org/[OpenOCD]
+:RISC-V-OpenOCD-port: https://github.com/riscv/riscv-openocd[RISC-V OpenOCD port]
 :Python: https://www.python.org/[Python]
 :rustup: https://rustup.rs/[rustup]
 :Rouge: https://rouge.jneen.net/[Rouge]
@@ -25,11 +27,12 @@ endif::[]
 :Rust: https://www.rust-lang.org/[Rust]
 :RV-Link: https://gitee.com/zoomdy/RV-LINK[RV-LINK]
 :SiPEED-Longan-Nano: http://longan.sipeed.com/en/[SiPEED Longan Nano]
+:SiPEED-RISC-V-Debugger: https://www.seeedstudio.com/Sipeed-USB-JTAG-TTL-RISC-V-Debugger-ST-Link-V2-STM8-STM32-Simulator-p-2910.html[SiPEED RISC-V Debugger]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
-A _{soft-blink}_ effect for {Neopixel} LED's using on the {SiPEED-Longan-Nano} written in {Rust}.
+Examples of lighting effects for the {SiPEED-Longan-Nano}.
 
 // todo Document RV-LINK usage.
 // todo Document OpenOCD usage with the SiPEED debugger.
@@ -47,58 +50,142 @@ git clone https://github.com/jwillikers/neopixel-soft-blink.git
 +
 [source,sh]
 ----
-cd neopixel-soft-blink
+cd smart-leds-fx/boards/longan-nano
 ----
 
-=== Rust
-
-. Install {rustup} and Rust.
-+
-[source,sh]
-----
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-----
-
-. Add Cargo's directory to your `PATH`.
-+
-[source,sh]
-----
-fish_add_path ~/.cargo/bin
-----
-
-. Install the Rust toolchain for the GD32 microcontroller, a RISC-V IMAC.
+. Install the Rust toolchain for the GD32VF103CBT6 microcontroller.
 +
 [source,sh]
 ----
 rustup target add riscv32imac-unknown-none-elf
 ----
 
-=== hf2
+=== Cargo Embed
 
-Install the {cargo-hf2} utility for flashing the board.
-
-[source,sh]
-----
-cargo install cargo-hf2
-----
-
-== Development
-
-. Build with the eponymous command.
+. Install required packages for {cargo-embed}.
 +
 [source,sh]
 ----
-cargo build
+sudo dnf -y install libusbx-devel systemd-devel
 ----
 
-. Double-click the onboard reset button on the Feather M4 Express.
-
-. Flash the board by running `cargo-hf2`.
+. Install the `cargo-embed` utility.
 +
 [source,sh]
 ----
-cargo hf2 --release
+cargo install cargo-embed
 ----
+
+. Install the required Udev rules.
++
+[source,sh]
+----
+wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+----
+
+. Load the new rules.
++
+[source,sh]
+----
+sudo udevadm control --reload
+----
+
+. Apply the new rules.
++
+[source,sh]
+----
+sudo udevadm trigger
+----
+
+=== dfu-util
+
+To flash the Longan Nano over a USB connection, install the `dfu-util` program.
+
+[source,sh]
+----
+sudo dnf -y install dfu-util
+----
+
+== Flash
+
+The Longan Nano can be flashed with the {dfu-util} over the USB-C connection or with a debug probe.
+
+=== dfu-util
+
+The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
+
+. Build the example.
++
+[source,sh]
+----
+cargo b --example rgbw-neopixel-stick-soft-blink
+----
+
+. Create a binary from the example's ELF file.
++
+[source,sh]
+----
+riscv-nuclei-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/release/rgbw-neopixel-stick-soft-blink firmware.bin
+----
+
+. Attach the Longan Nano's USB-C port to your computer.
+
+. Put the Longan Nano in bootloader mode by holding the `BOOT0` button pressed while pressing and releasing the reset button.
+
+. Now flash the `.bin` file onto the Longan Nano using the `dfu-util` program.
++
+[source,sh]
+----
+dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
+----
+
+=== Cargo Embed
+
+Debug probes can be used with cargo-embed to easily flash the Longan Nano.
+The J-Link, {SiPEED-RISC-V-Debugger}, and {RV-LINK} are all supported.
+With a debugger attached, just use {cargo-embed} to flash the desired example to the Longan Nano.
+
+[source,sh]
+----
+cargo embed --example rgbw-neopixel-stick-soft-blink
+----
+
+== Debug
+
+Debugging can be done using a J-Link, {SiPEED-RISC-V-Debugger}, or {RV-LINK}.
+
+. First, attach the debug probe to the pins opposite the USB-C port of the Longan Nano.
+
+. With a debug probe connected, start {OpenOCD} with the configuration for the appropriate probe as detailed below.
++
+SiPEED RISC-V Debugger::
++
+--
+Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
+
+[NOTE]
+----
+Currently, stock OpenOCD 0.11.0 doesn't work for me, so I have to use the {RISC-V-OpenOCD-port}.
+----
+
+[source,sh]
+----
+openocd -f sipeed-jtag.cfg -f openocd.cfg
+----
+--
+
+RV-LINK:: todo I haven't test this myself yet, but instructions for using the {RV-LINK} can be found https://github.com/riscv-rust/longan-nano#using-rv-link-for-flashing-and-debugging[here].
+
+. Now, launch GDB using `cargo run` subcommand and the desired example.
++
+[source,sh]
+----
+cargo run --example rgbw-neopixel-stick-soft-blink
+----
+
+== Examples
+
+rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for a stick of 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
 
 == Todo
 
@@ -115,13 +202,14 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
-* {cargo-hf2}
+* {dfu-util}
 * {Fedora}
 * {Fedora-Silverblue}
 * {fish}
 * {Git}
 * {Linux}
 * {longan-nano-hal}
+* {OpenOCD}
 * {Python}
 * {Rouge}
 * {Ruby}
@@ -142,4 +230,3 @@ This repository is licensed under the https://www.gnu.org/licenses/gpl-3.0.html[
 == Authors
 
 mailto:{email}[{author}]
-
