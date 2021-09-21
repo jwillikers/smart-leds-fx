@@ -1,5 +1,5 @@
 [package]
-name = "circuit-playground-express-fx"
+name = "circuit-playground-express-example"
 version = "0.1.0"
 authors = ["Jordan Williams <jordan@jwillikers.com>"]
 description = "Examples of lighting effects for Adafruit's Circuit Playground Express"
@@ -18,15 +18,10 @@ rtt-target = {version = "0.3", features = ["cortex-m"]}
 nb = "0.1"
 smart-leds = "0.3.0"
 ws2812-timer-delay = "0.3.0"
-#ws2812-spi = "0.4.0"
 
 [dependencies.circuit_playground_express]
-git = "https://github.com/atsamd-rs/atsamd"
+version = "0.9.0"
 features = ["unproven", "use_semihosting"]
-
-[dependencies.num-traits]
-version = "0.2"
-default-features = false
 
 [dependencies.smart-leds-fx]
 path = "../.."
