@@ -1,9 +1,8 @@
 #![no_std]
 #![no_main]
 
-extern crate nb;
-extern crate panic_halt;
-
+use panic_rtt_target as _;
+use rtt_target::rtt_init_default;
 use riscv_rt::entry;
 
 use longan_nano::hal::{delay::McycleDelay, pac, prelude::*, spi::Spi};
@@ -22,6 +21,8 @@ use ws2812_spi::Ws2812;
 
 #[entry]
 fn main() -> ! {
+    rtt_init_default!();
+
     const DELAY: Milliseconds<u32> = Milliseconds::<u32>(8);
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
     const NUM_LEDS: usize = 8;
