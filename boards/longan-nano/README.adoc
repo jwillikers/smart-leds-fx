@@ -53,6 +53,13 @@ git clone https://github.com/jwillikers/neopixel-soft-blink.git
 cd smart-leds-fx/boards/longan-nano
 ----
 
+// todo
+https://github.com/sifive/freedom-tools/releases
+. Install the GNU RISC-V toolchain.
++
+----
+----
+
 . Install the Rust toolchain for the GD32VF103CBT6 microcontroller.
 +
 [source,sh]
@@ -99,11 +106,92 @@ sudo udevadm trigger
 
 === dfu-util
 
-To flash the Longan Nano over a USB connection, install the `dfu-util` program.
+To flash the Longan Nano over a USB connection, install the {dfu-util} program.
 
+[NOTE]
+----
+As things stand now, you may need to build the latest version from source for flashing to work properly.
+----
+
+DNF::
++
 [source,sh]
 ----
 sudo dnf -y install dfu-util
+----
+
+Source::
+
+[source,sh]
+----
+git clone git://git.code.sf.net/p/dfu-util/dfu-util
+----
+
+[source,sh]
+----
+cd dfu-util
+----
+
+. Generate the configure script.
++
+[source,sh]
+----
+./autogen.sh
+----
+
+. Configure.
+I set the program to be installed under `~/.local` here, since `~/.local/bin` is already on my `PATH`.
++
+[source,sh]
+----
+./configure --prefix=$HOME/.local
+----
+
+. Build and install `dfu-util`.
++
+[source,sh]
+----
+make install
+----
+
+=== RISC-V objcopy
+
+You will also need the RISC-V variant of `objcopy` built from source in order to convert the ELF executable to a binary file.
+The binary file can then be flashed with `dfu-util`.
+
+. Install the necessary dependencies.
++
+[source,sh]
+----
+sudo dnf -y install bison-devel flex-devel texinfo
+----
+
+. Clone the RISC-V binutils project.
++
+[source,sh]
+----
+git clone https://github.com/sifive/riscv-binutils-gdb.git
+----
+
+. Change into the project's directory.
++
+[source,sh]
+----
+cd riscv-binutils-gdb
+----
+
+. Run the configure script.
++
+[source,sh]
+----
+./configure --target=riscv64-unknown-elf --disable-werror --with-python=no --disable-gdb --disable-sim --disable-libdecnumber --disable-libreadline --with-expat=yes --with-mpc=no --with-mpfr=no --with-gmp=no
+----
+
+. Build.
++
+[source,sh]
+----
+make
 ----
 
 == Flash
@@ -118,14 +206,14 @@ The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C
 +
 [source,sh]
 ----
-cargo b --example rgbw-neopixel-stick-soft-blink
+cargo build --example rgbw-neopixel-stick-soft-blink
 ----
 
 . Create a binary from the example's ELF file.
 +
 [source,sh]
 ----
-riscv-nuclei-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/release/rgbw-neopixel-stick-soft-blink firmware.bin
+objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
 ----
 
 . Attach the Longan Nano's USB-C port to your computer.
@@ -136,7 +224,7 @@ riscv-nuclei-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/release/r
 +
 [source,sh]
 ----
-dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
+sudo dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
 ----
 
 === Cargo Embed
@@ -166,6 +254,7 @@ Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
 [NOTE]
 ----
 Currently, stock OpenOCD 0.11.0 doesn't work for me, so I have to use the {RISC-V-OpenOCD-port}.
+There's also https://github.com/riscv-mcu/riscv-openocd[this fork] for RISC-V.
 ----
 
 [source,sh]
