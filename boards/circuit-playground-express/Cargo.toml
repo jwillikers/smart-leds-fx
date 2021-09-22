@@ -13,9 +13,9 @@ repository = "https://github.com/jwillikers/smart-leds-fx"
 cortex-m = "0.7.3"
 cortex-m-rt = "0.6.15"
 embedded-time = "0.12.0"
-panic-rtt-target = {version = "0.1.1", features = ["cortex-m"]}
-rtt-target = {version = "0.3", features = ["cortex-m"]}
 nb = "0.1"
+panic-rtt-target = {version = "0.1.2", features = ["cortex-m"]}
+rtt-target = {version = "0.3.1", features = ["cortex-m"]}
 smart-leds = "0.3.0"
 ws2812-timer-delay = "0.3.0"
 
