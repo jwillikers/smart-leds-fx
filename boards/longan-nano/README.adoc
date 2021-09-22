@@ -14,11 +14,14 @@ endif::[]
 :Fedora: https://getfedora.org/[Fedora]
 :Fedora-Silverblue: https://silverblue.fedoraproject.org/[Fedora Silverblue]
 :fish: https://fishshell.com/[fish]
+:GD32VF103CBT6: https://www.gigadevice.com/microcontroller/gd32vf103cbt6/[GD32VF103CBT6]
+:GDB: https://www.gnu.org/software/gdb/[GDB]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
 :Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
-:Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :OpenOCD: https://openocd.org/[OpenOCD]
+:RISC-V-GNU-Compiler-Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain[RISC-V GNU Compiler Toolchain]
 :RISC-V-OpenOCD-port: https://github.com/riscv/riscv-openocd[RISC-V OpenOCD port]
 :Python: https://www.python.org/[Python]
 :rustup: https://rustup.rs/[rustup]
@@ -30,14 +33,12 @@ endif::[]
 :SiPEED-RISC-V-Debugger: https://www.seeedstudio.com/Sipeed-USB-JTAG-TTL-RISC-V-Debugger-ST-Link-V2-STM8-STM32-Simulator-p-2910.html[SiPEED RISC-V Debugger]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:udev: https://www.freedesktop.org/software/systemd/man/udev.html[udev]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
 Examples of lighting effects for the {SiPEED-Longan-Nano}.
 
-// todo Document RV-LINK usage.
-// todo Document OpenOCD usage with the SiPEED debugger.
-
-== Setup
+== Getting Started
 
 . First, clone the repository.
 +
@@ -53,60 +54,66 @@ git clone https://github.com/jwillikers/neopixel-soft-blink.git
 cd smart-leds-fx/boards/longan-nano
 ----
 
-// todo
-https://github.com/sifive/freedom-tools/releases
-. Install the GNU RISC-V toolchain.
+. Build the latest {RISC-V-GNU-Compiler-Toolchain}.
+
+.. Clone the {RISC-V-GNU-Compiler-Toolchain} repository.
 +
+[source,sh]
 ----
+git clone https://github.com/riscv-collab/riscv-gnu-toolchain.git
 ----
 
-. Install the Rust toolchain for the GD32VF103CBT6 microcontroller.
+.. Change to the project directory.
++
+[source,sh]
+----
+cd riscv-gnu-toolchain
+----
+
+.. Install the dependencies required to build the toolchain.
++
+[source,sh]
+----
+sudo dnf -y install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel gawk bison flex texinfo patchutils gcc gcc-c++ zlib-devel expat-devel
+----
+
+.. Configure.
+Here, the `--prefix` option installs everything under the `~/.local` directory.
++
+[source,sh]
+----
+./configure --prefix=$HOME/.local/riscv
+----
+
+.. Build.
++
+[source,sh]
+----
+make
+----
+
+. Add the installation `bin` directory to your `PATH`.
++
+[source,sh]
+----
+fish_add_path ~/.local/riscv/bin
+----
+
+. Install the Rust toolchain for the {GD32VF103CBT6} microcontroller, which uses _RV32IMAC_.
 +
 [source,sh]
 ----
 rustup target add riscv32imac-unknown-none-elf
 ----
 
-=== Cargo Embed
+Instructions are provided for using <<dfu-util>>, <<cargo-embed>>, and <<OpenOCD>> to flash an example to the Longan Nano.
+The latter two can also be used for debugging.
 
-. Install required packages for {cargo-embed}.
-+
-[source,sh]
-----
-sudo dnf -y install libusbx-devel systemd-devel
-----
+== dfu-util
 
-. Install the `cargo-embed` utility.
-+
-[source,sh]
-----
-cargo install cargo-embed
-----
-
-. Install the required Udev rules.
-+
-[source,sh]
-----
-wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
-----
-
-. Load the new rules.
-+
-[source,sh]
-----
-sudo udevadm control --reload
-----
-
-. Apply the new rules.
-+
-[source,sh]
-----
-sudo udevadm trigger
-----
-
-=== dfu-util
-
-To flash the Longan Nano over a USB connection, install the {dfu-util} program.
+The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
+Unfortunately, it currently requires building quite a bit of code from source in order to do so, and some manual steps.
+If you have a supported debug probe handy, I recommend just using that.
 
 [NOTE]
 ----
@@ -154,53 +161,53 @@ I set the program to be installed under `~/.local` here, since `~/.local/bin` is
 make install
 ----
 
-=== RISC-V objcopy
+//==== Build RISC-V objcopy
+//
+//You will also need the RISC-V variant of `objcopy` built from source in order to convert the ELF executable to a binary file.
+//The binary file can then be flashed with `dfu-util`.
 
-You will also need the RISC-V variant of `objcopy` built from source in order to convert the ELF executable to a binary file.
-The binary file can then be flashed with `dfu-util`.
-
-. Install the necessary dependencies.
-+
-[source,sh]
-----
-sudo dnf -y install bison-devel flex-devel texinfo
-----
-
-. Clone the RISC-V binutils project.
-+
-[source,sh]
-----
-git clone https://github.com/sifive/riscv-binutils-gdb.git
-----
-
-. Change into the project's directory.
-+
-[source,sh]
-----
-cd riscv-binutils-gdb
-----
-
-. Run the configure script.
-+
-[source,sh]
-----
-./configure --target=riscv64-unknown-elf --disable-werror --with-python=no --disable-gdb --disable-sim --disable-libdecnumber --disable-libreadline --with-expat=yes --with-mpc=no --with-mpfr=no --with-gmp=no
-----
-
-. Build.
-+
-[source,sh]
-----
-make
-----
-
-== Flash
-
-The Longan Nano can be flashed with the {dfu-util} over the USB-C connection or with a debug probe.
-
-=== dfu-util
-
-The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
+//. Install the necessary dependencies.
+//+
+//[source,sh]
+//----
+//sudo dnf -y install bison-devel flex-devel texinfo
+//----
+//
+//. Clone the RISC-V binutils project.
+//+
+//[source,sh]
+//----
+//git clone https://github.com/sifive/riscv-binutils-gdb.git
+//----
+//
+//. Change into the project's directory.
+//+
+//[source,sh]
+//----
+//cd riscv-binutils-gdb
+//----
+//
+//. Run the configure script.
+//Here, the `--prefix` option installs everything under the `~/.local` directory.
+//+
+//[source,sh]
+//----
+//./configure --target=riscv64-unknown-elf --disable-werror --with-python=no --disable-gdb --disable-sim --disable-libdecnumber --disable-libreadline --with-expat=yes --with-mpc=no --with-mpfr=no --with-gmp=no --prefix=$HOME/.local
+//----
+//
+//. Build.
+//+
+//[source,sh]
+//----
+//make
+//----
+//
+//. Install.
+//+
+//[source,sh]
+//----
+//make install
+//----
 
 . Build the example.
 +
@@ -213,7 +220,7 @@ cargo build --example rgbw-neopixel-stick-soft-blink
 +
 [source,sh]
 ----
-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
+riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
 ----
 
 . Attach the Longan Nano's USB-C port to your computer.
@@ -227,24 +234,72 @@ objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopix
 sudo dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
 ----
 
-=== Cargo Embed
+== cargo-embed
 
-Debug probes can be used with cargo-embed to easily flash the Longan Nano.
+{cargo-embed} simplifies flashing and other interactions with microcontrollers over various types of debug probes.
 The J-Link, {SiPEED-RISC-V-Debugger}, and {RV-LINK} are all supported.
 With a debugger attached, just use {cargo-embed} to flash the desired example to the Longan Nano.
 
+=== Install
+
+. Install necessary system packages.
++
+[source,sh]
+----
+sudo dnf -y install libftdi-devel libusbx-devel systemd-devel
+----
+
+. Install the `cargo-embed` crate.
++
+[source,sh]
+----
+cargo install cargo-embed --features ftdi
+----
+
+. Install the required {udev} rules.
++
+[source,sh]
+----
+wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+----
+
+. Load the new rules.
++
+[source,sh]
+----
+sudo udevadm control --reload
+----
+
+. Apply the new rules.
++
+[source,sh]
+----
+sudo udevadm trigger
+----
+
+==== Flash
+
+. First, attach the debug probe to the pins opposite the USB-C port of the Longan Nano.
+
+. Pass the desired example to the `cargo embed` subcommand.
++
 [source,sh]
 ----
 cargo embed --example rgbw-neopixel-stick-soft-blink
 ----
 
-== Debug
+[NOTE]
+====
+Currently, cargo-embed fails to reset the Longan Nano after flash it, so you have to reset it manually.
+====
 
-Debugging can be done using a J-Link, {SiPEED-RISC-V-Debugger}, or {RV-LINK}.
+== OpenOCD
+
+Flashing and debugging can be done using {OpenOCD} and {GDB} with debug probe such as a J-Link, {SiPEED-RISC-V-Debugger}, or {RV-LINK}.
 
 . First, attach the debug probe to the pins opposite the USB-C port of the Longan Nano.
 
-. With a debug probe connected, start {OpenOCD} with the configuration for the appropriate probe as detailed below.
+. With a debug probe connected, start OpenOCD with the configuration for the appropriate probe as detailed below.
 +
 SiPEED RISC-V Debugger::
 +
@@ -252,10 +307,10 @@ SiPEED RISC-V Debugger::
 Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
 
 [NOTE]
-----
+====
 Currently, stock OpenOCD 0.11.0 doesn't work for me, so I have to use the {RISC-V-OpenOCD-port}.
 There's also https://github.com/riscv-mcu/riscv-openocd[this fork] for RISC-V.
-----
+====
 
 [source,sh]
 ----
@@ -265,7 +320,7 @@ openocd -f sipeed-jtag.cfg -f openocd.cfg
 
 RV-LINK:: todo I haven't test this myself yet, but instructions for using the {RV-LINK} can be found https://github.com/riscv-rust/longan-nano#using-rv-link-for-flashing-and-debugging[here].
 
-. Now, launch GDB using `cargo run` subcommand and the desired example.
+. Now, launch GDB using the `cargo run` subcommand and the desired example.
 +
 [source,sh]
 ----
@@ -295,6 +350,7 @@ Several of these projects are enumerated below.
 * {Fedora}
 * {Fedora-Silverblue}
 * {fish}
+* {GDB}
 * {Git}
 * {Linux}
 * {longan-nano-hal}
