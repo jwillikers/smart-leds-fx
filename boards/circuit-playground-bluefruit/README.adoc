@@ -10,7 +10,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :Adafruit: https://www.adafruit.com/[Adafruit]
+:Adafruit-nRF52-Bootloader: https://github.com/adafruit/Adafruit_nRF52_Bootloader[Adafruit nRF52 Bootloader]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:cargo-binutils: https://github.com/rust-embedded/cargo-binutils[cargo-binutils]
 :cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
 :cargo-hf2: https://github.com/jacobrosenthal/hf2-rs[cargo-hf2]
 :Circuit-Playground-Bluefruit: https://learn.adafruit.com/adafruit-circuit-playground-bluefruit[Circuit Playground Bluefruit]
@@ -18,7 +20,7 @@ endif::[]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
-:Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :nrf-hal: https://github.com/nrf-rs/nrf-hal[nrf-hal]
 :probe-rs: https://probe.rs/[probe-rs]
 :Python: https://www.python.org/[Python]
@@ -28,6 +30,8 @@ endif::[]
 :rustup: https://rustup.rs/[rustup]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:UF2: https://github.com/microsoft/uf2[UF2]
+:uf2conv-rs: https://github.com/sajattack/uf2conv-rs[uf2conv-rs]
 
 Examples of lighting effects for {Adafruit}'s {Circuit-Playground-Bluefruit}.
 
@@ -56,35 +60,61 @@ rustup target add thumbv7em-none-eabihf
 
 == Program
 
-The Circuit Playground Bluefruit can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
+https://github.com/adafruit/Adafruit_nRF52_nrfutil#usage
+https://github.com/adafruit/Adafruit_nRF52_Bootloader#making-your-own-uf2
+https://github.com/atsamd-rs/atsamd/#getting-code-onto-the-devices-with-bootloaders-uf2conv-rs
 
-=== UF2
+The Circuit Playground Bluefruit can be programmed directly over a micro USB connection using {UF2} or via the SWD connections available exposed on the bottom of the board.
+At the moment, it is not possible to use {cargo-hf2} to automatically flash the attached board.
+The {Adafruit-nRF52-Bootloader} lacks support for the required HID functionality.
+It is still possible to flash UF2 payloads via drag-n-drop, though it requires more steps.
 
-{cargo-hf2} makes it easy to convert and install programs to the board using the on-board UF2 bootloader.
-
-. Install the {cargo-hf2} utility.
+. Install the LLVM tools preview.
 +
 [source,sh]
 ----
-cargo install cargo-hf2
+rustup component add llvm-tools-preview
+----
+
+. Install the {cargo-objcopy} and {uf2conv-rs} utilities.
++
+[source,sh]
+----
+cargo install cargo-objcopy uf2conv
 ----
 
 . Attach the Circuit Playground Bluefruit to your computer using the micro USB port.
 
-. Double click the reset button to put the board to put in bootloader mode.
+. Double click the reset button to put the board to put the Circuit Playground Bluefruit in bootloader mode.
+The onboard NeoPixels should flash red and then remain green.
+The Circuit Playground Bluefruit should appear on your computer as an attached USB device named `CPLAYBOOT` when it is in bootloader mode.
 
-. Flash the board using the `hf2` Cargo subcommand.
+. Now build a binary, `.bin`, executable for your chosen example using cargo-objcopy.
 +
 [source,sh]
 ----
-cargo hf2 --example soft-blink-onboard
+cargo objcopy --example soft-blink-onboard --release -- -O binary soft-blink-onboard.bin
+----
+
+. Convert the binary file to UF2 with the `uf2conv` command.
++
+[source,sh]
+----
+uf2conv soft-blink-onboard.bin --base 0x26000 --family 0xADA52840 --output soft-blink-onboard.uf2
+----
+
+. To flash the UF2 file on the Adafruit Circuit Bluefruit, simply copy it over.
++
+[source,sh]
+----
+cp soft-blink-onboard.uf2 /run/media/$USER/CPLAYBOOT
 ----
 
 === SWD
 
-For instructions on connecting to the physical SWD interface on the Circuit Playground Express, see the article {Circuit-Playground-Express-M0-Wiring}.
+For instructions on connecting to the physical SWD interface on the Circuit Playground Bluefruit, see the article {Circuit-Playground-Express-M0-Wiring}.
 
-. Install required packages for {cargo-embed}.
+. Install the required packages for {cargo-embed}.
 +
 [source,sh]
 ----
@@ -121,7 +151,7 @@ sudo udevadm trigger
 
 . Attach the Circuit Playground Bluefruit to your computer using both the micro USB port, for power, and the SWD pins.
 
-. Use cargo-embed to flash an example.
+. Now use cargo-embed to flash an example.
 +
 [source,sh]
 ----
@@ -130,7 +160,7 @@ cargo embed --example soft-blink-onboard
 
 == Examples
 
-soft-blink-onboard:: A _{soft-blink}_ effect for the ten on-board {Neopixel} LED's.
+soft-blink-onboard:: A _{soft-blink}_ effect for the ten on-board {NeoPixel} LED's.
 
 == Todo
 
@@ -147,6 +177,7 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
+* {cargo-binutils}
 * {cargo-embed}
 * {cargo-hf2}
 * {fish}
@@ -159,6 +190,7 @@ Several of these projects are enumerated below.
 * {Ruby}
 * {Rust}
 * {smart-leds}
+* {uf2conv-rs}
 
 == Code of Conduct
 

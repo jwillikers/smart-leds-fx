@@ -2,8 +2,9 @@
 #![no_main]
 
 use cortex_m_rt::entry;
-use panic_rtt_target as _;
-use rtt_target::rtt_init_default;
+use panic_halt as _;
+// use panic_rtt_target as _;
+// use rtt_target::rtt_init_default;
 
 use nrf52840_hal::{
     pac::Peripherals,
@@ -58,7 +59,7 @@ impl CountDown for SpinTimer {
 
 #[entry]
 fn main() -> ! {
-    rtt_init_default!();
+    // rtt_init_default!();
 
     const DELAY: Milliseconds<u32> = Milliseconds::<u32>(8);
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
@@ -71,8 +72,9 @@ fn main() -> ! {
     let mut delay = Timer::new(dp.TIMER0);
     let port0 = Parts::new(dp.P0);
 
-    let ws_data_pin = port0.p0_10.into_push_pull_output(Level::Low);
-    let timer = SpinTimer::new(3);
+    let _power_switch = port0.p0_06.into_push_pull_output(Level::Low);
+    let ws_data_pin = port0.p0_13.into_push_pull_output(Level::Low);
+    let timer = SpinTimer::new(8);
     let mut ws = ws2812::Ws2812::new(timer, ws_data_pin);
 
     loop {

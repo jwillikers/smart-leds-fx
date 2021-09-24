@@ -1,3 +1,8 @@
 target/
 **/*.rs.bk
 Cargo.lock
+
+*.bin
+*.hex
+*.uf2
+*.zip

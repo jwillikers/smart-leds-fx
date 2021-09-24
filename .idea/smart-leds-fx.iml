@@ -8,9 +8,12 @@
       <sourceFolder url="file://$MODULE_DIR$/boards/circuit-playground-bluefruit/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/boards/circuit-playground-express/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/boards/circuit-playground-express/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/boards/longan-nano/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/boards/longan-nano/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/boards/circuit-playground-express/target" />
       <excludeFolder url="file://$MODULE_DIR$/boards/circuit-playground-bluefruit/target" />
+      <excludeFolder url="file://$MODULE_DIR$/boards/longan-nano/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
