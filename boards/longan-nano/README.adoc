@@ -1,4 +1,4 @@
-= Longan Nano v1.0
+= Longan Nano
 Jordan Williams <jordan@jwillikers.com>
 :experimental:
 :icons: font
@@ -35,7 +35,7 @@ endif::[]
 :udev: https://www.freedesktop.org/software/systemd/man/udev.html[udev]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
 
-Examples of lighting effects for the {SiPEED-Longan-Nano}.
+Examples of lighting effects for the {SiPEED-Longan-Nano} v1.0.
 
 == Getting Started
 
@@ -111,102 +111,11 @@ The latter two can also be used for debugging.
 == dfu-util
 
 The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
-Unfortunately, it currently requires building quite a bit of code from source in order to do so, and some manual steps.
-If you have a supported debug probe handy, I recommend just using that.
 
-[NOTE]
-----
-As things stand now, you may need to build the latest version from source for flashing to work properly.
-----
-
-DNF::
-+
 [source,sh]
 ----
 sudo dnf -y install dfu-util
 ----
-
-Source::
-
-[source,sh]
-----
-git clone git://git.code.sf.net/p/dfu-util/dfu-util
-----
-
-[source,sh]
-----
-cd dfu-util
-----
-
-. Generate the configure script.
-+
-[source,sh]
-----
-./autogen.sh
-----
-
-. Configure.
-I set the program to be installed under `~/.local` here, since `~/.local/bin` is already on my `PATH`.
-+
-[source,sh]
-----
-./configure --prefix=$HOME/.local
-----
-
-. Build and install `dfu-util`.
-+
-[source,sh]
-----
-make install
-----
-
-//==== Build RISC-V objcopy
-//
-//You will also need the RISC-V variant of `objcopy` built from source in order to convert the ELF executable to a binary file.
-//The binary file can then be flashed with `dfu-util`.
-
-//. Install the necessary dependencies.
-//+
-//[source,sh]
-//----
-//sudo dnf -y install bison-devel flex-devel texinfo
-//----
-//
-//. Clone the RISC-V binutils project.
-//+
-//[source,sh]
-//----
-//git clone https://github.com/sifive/riscv-binutils-gdb.git
-//----
-//
-//. Change into the project's directory.
-//+
-//[source,sh]
-//----
-//cd riscv-binutils-gdb
-//----
-//
-//. Run the configure script.
-//Here, the `--prefix` option installs everything under the `~/.local` directory.
-//+
-//[source,sh]
-//----
-//./configure --target=riscv64-unknown-elf --disable-werror --with-python=no --disable-gdb --disable-sim --disable-libdecnumber --disable-libreadline --with-expat=yes --with-mpc=no --with-mpfr=no --with-gmp=no --prefix=$HOME/.local
-//----
-//
-//. Build.
-//+
-//[source,sh]
-//----
-//make
-//----
-//
-//. Install.
-//+
-//[source,sh]
-//----
-//make install
-//----
 
 . Build the example.
 +
@@ -286,11 +195,6 @@ sudo udevadm trigger
 ----
 cargo embed --example rgbw-neopixel-stick-soft-blink
 ----
-
-[NOTE]
-====
-Currently, cargo-embed fails to reset the Longan Nano after flash it, so you have to reset it manually.
-====
 
 == OpenOCD
 
