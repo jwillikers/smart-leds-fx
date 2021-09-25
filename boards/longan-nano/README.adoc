@@ -22,7 +22,6 @@ endif::[]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :OpenOCD: https://openocd.org/[OpenOCD]
 :RISC-V-GNU-Compiler-Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain[RISC-V GNU Compiler Toolchain]
-:RISC-V-OpenOCD-port: https://github.com/riscv/riscv-openocd[RISC-V OpenOCD port]
 :Python: https://www.python.org/[Python]
 :rustup: https://rustup.rs/[rustup]
 :Rouge: https://rouge.jneen.net/[Rouge]
@@ -301,22 +300,12 @@ Flashing and debugging can be done using {OpenOCD} and {GDB} with debug probe su
 
 . With a debug probe connected, start OpenOCD with the configuration for the appropriate probe as detailed below.
 +
-SiPEED RISC-V Debugger::
+SiPEED RISC-V Debugger:: Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
 +
---
-Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
-
-[NOTE]
-====
-Currently, stock OpenOCD 0.11.0 doesn't work for me, so I have to use the {RISC-V-OpenOCD-port}.
-There's also https://github.com/riscv-mcu/riscv-openocd[this fork] for RISC-V.
-====
-
 [source,sh]
 ----
-openocd -f sipeed-jtag.cfg -f openocd.cfg
+openocd -f sipeed-jtag.cfg -f target/gd32vf103.cfg
 ----
---
 
 RV-LINK:: todo I haven't test this myself yet, but instructions for using the {RV-LINK} can be found https://github.com/riscv-rust/longan-nano#using-rv-link-for-flashing-and-debugging[here].
 

@@ -8,7 +8,7 @@
 # The protocol to be used for communicating with the target.
 protocol = "Jtag"
 # The speed in kHz of the data link to the target.
-speed = 500
+speed = 800
 
 [default.flashing]
 # Whether or not the target should be flashed.
@@ -35,7 +35,7 @@ halt_afterwards = false
 # The chip name of the chip to be debugged.
 chip = "GD32VF103CBT6"
 # A list of chip descriptions to be loaded during runtime.
-chip_descriptions = ["GD32VF1_Series.yaml"]
+# chip_descriptions = []
 # The default log level to be used. Possible values are one of:
 #   "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 log_level = "WARN"
@@ -44,7 +44,7 @@ connect_under_reset = false
 
 [default.rtt]
 # Whether or not an RTTUI should be opened after flashing.
-enabled = false
+enabled = true
 # A list of channel associations to be displayed. If left empty, all channels are displayed.
 # formats are: String, Defmt, BinaryLE,
 channels = [
@@ -68,4 +68,4 @@ log_path = "./logs"
 # Whether or not a GDB server should be opened after flashing.
 enabled = false
 # The connection string in host:port format wher the GDB server will open a socket.
-gdb_connection_string = "127.0.0.1:1337"
+gdb_connection_string = "127.0.0.1:3333"

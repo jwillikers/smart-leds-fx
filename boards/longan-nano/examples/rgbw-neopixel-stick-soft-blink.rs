@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use panic_rtt_target as _;
+use panic_halt as _;
 use rtt_target::rtt_init_default;
 use riscv_rt::entry;
 
