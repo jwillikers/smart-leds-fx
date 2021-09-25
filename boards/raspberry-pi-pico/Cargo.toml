@@ -1,9 +1,13 @@
 [package]
-authors = ["the rp-rs team"]
-edition = "2018"
-readme = "README.md"
 name = "raspberry-pi-pico-example"
 version = "0.1.0"
+description = "A soft blink effect for the onboard Neopixel on the Raspberry Pi Pico"
+authors = ["Jordan Williams <jordan@jwillikers.com>"]
+edition = "2018"
+keywords = ["dotstar", "embedded", "fx", "led", "neopixel", "no-std", "smart-leds", "ws2812"]
+license = "MIT OR Apache-2.0"
+readme = "README.adoc"
+repository = "https://github.com/jwillikers/smart-leds-fx"
 resolver = "2"
 
 [dependencies]

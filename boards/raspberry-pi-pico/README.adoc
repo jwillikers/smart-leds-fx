@@ -86,7 +86,7 @@ cargo install elf2uf2-rs
 
 . While holding the `BOOTSEL` button, attach the Raspberry Pi Pico to your computer using the micro USB port.
 
-. Flash the board using the Cargo's `run` subcommand.
+. Flash the board using Cargo's `run` subcommand.
 +
 [source,sh]
 ----
@@ -121,7 +121,7 @@ cargo run --example rgbw-neopixel-stick-soft-blink
 The `picoprobe` is a Raspberry Pi Pico configured to run as a debug probe.
 To use the `picoprobe` to flash and debug the examples, follow these instructions.
 
-. Now, boot the Raspberry Pi Pico in bootloader mode by holding the bootset button while plugging it in.
+. Now, boot the Raspberry Pi Pico in bootloader mode by holding the `BOOTSEL` button while plugging it in.
 
 . Download the {UF2} file containing the `picoprobe` firmware.
 
