@@ -1,0 +1,190 @@
+= Raspberry Pi Pico Examples
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:elf2uf2-rs: https://github.com/JoNil/elf2uf2-rs[elf2uf2-rs]
+:fish: https://fishshell.com/[fish]
+:flip-link: https://github.com/knurling-rs/flip-link[flip-link]
+:Git: https://git-scm.com/[Git]
+:Linux: https://www.linuxfoundation.org/[Linux]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:probe-rs: https://probe.rs/[probe-rs]
+:probe-run: https://github.com/knurling-rs/probe-run[probe-run]
+:Python: https://www.python.org/[Python]
+:Raspberry-Pi-Pico: https://www.raspberrypi.org/products/raspberry-pi-pico/[Raspberry Pi Pico]
+:RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
+:rp-hal: https://github.com/rp-rs/rp-hal[rp-hal]
+:Rouge: https://rouge.jneen.net/[Rouge]
+:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:UF2: https://github.com/microsoft/uf2[UF2]
+
+Examples of lighting effects for the {Raspberry-Pi-Pico}.
+
+== Setup
+
+. First, clone the repository.
++
+[source,sh]
+----
+git clone https://github.com/jwillikers/smart-leds-fx.git
+----
+
+. Change to the board's directory.
++
+[source,sh]
+----
+cd smart-leds-fx/boards/raspberry-pi-pico
+----
+
+. Install the {Rust} toolchain for the Raspberry Pi Pico.
++
+[source,sh]
+----
+rustup target add thumbv6m-none-eabi
+----
+
+. Install `probe-run-rp` until support lands in upstream {probe-run}.
++
+[source,sh]
+----
+cargo install --git https://github.com/rp-rs/probe-run --branch main
+----
+
+. Install {flip-link}
++
+[source,sh]
+----
+cargo install flip-link
+----
+
+== Program
+
+The Raspberry Pi Pico can be programmed directly through its micro USB port or using its SWD pins.
+
+=== UF2
+
+{elf2uf2-rs} makes it incredibly easy to flash the Raspberry Pi Pico using its micro USB port.
+
+. Install the `elf2uf2-rs` crate.
++
+[source,sh]
+----
+cargo install elf2uf2-rs
+----
+
+. While holding the `BOOTSEL` button, attach the Raspberry Pi Pico to your computer using the micro USB port.
+
+. Flash the board using the Cargo's `run` subcommand.
++
+[source,sh]
+----
+cargo run --example rgbw-neopixel-stick-soft-blink
+----
+
+=== SWD
+
+Opposite the micro USB port on the Raspberry Pi Pico are three pins for making an SWD connection.
+Support for the Raspberry Pi Pico is missing for many popular debug probe tools currently, so using a second Raspberry Pi Pico as the debug probe works best.
+Refer to <<picoprobe>> for instructions.
+This section describes the general instructions to use any debug probe.
+
+. Change the runner in `.cargo/config.toml` to `probe-run-rp`.
++
+..cargo/config.toml
+[source,toml]
+----
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+runner = "probe-run-rp --chip RP2040"
+----
+
+. Now just run an example with `cargo run`.
++
+[source,sh]
+----
+cargo run --example rgbw-neopixel-stick-soft-blink
+----
+
+==== picoprobe
+
+The `picoprobe` is a Raspberry Pi Pico configured to run as a debug probe.
+To use the `picoprobe` to flash and debug the examples, follow these instructions.
+
+. Now, boot the Raspberry Pi Pico in bootloader mode by holding the bootset button while plugging it in.
+
+. Download the {UF2} file containing the `picoprobe` firmware.
+
+. Download and install the `picoprobe` firmware: https://github.com/majbthrd/DapperMime/releases/download/20210225/raspberry_pi_pico-DapperMime.uf2.
++
+[source,sh]
+----
+wget -LP /run/media/$USER/RPI-RP2/ https://github.com/majbthrd/DapperMime/releases/download/20210225/raspberry_pi_pico-DapperMime.uf2
+----
+
+. Wire the two Picos together according to the instructions https://datasheets.raspberrypi.org/pico/getting-started-with-pico.pdf#%5B%7B%22num%22%3A60%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C115%2C841.89%2Cnull%5D[here].
+
+== Examples
+
+rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} containing 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin GPIO7, of the Raspberry Pi Pico.
+
+== Todo
+
+* Improve power consumption by using sleep modes and disabling unused peripherals.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {cargo-embed}
+* {elf2uf2-rs}
+* {fish}
+* {flip-link}
+* {Git}
+* {Linux}
+* {atsamd-rs-atsamd}
+* {probe-rs}
+* {probe-run}
+* {Python}
+* {Rouge}
+* {rp-hal}
+* {Ruby}
+* {Rust}
+* {smart-leds}
+
+== Code of Conduct
+
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+Licensed under either of
+
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+
+at your option.
+
+© 2021 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]
+

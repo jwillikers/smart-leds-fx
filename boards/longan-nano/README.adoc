@@ -21,6 +21,7 @@ endif::[]
 :Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :OpenOCD: https://openocd.org/[OpenOCD]
+:RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
 :RISC-V-GNU-Compiler-Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain[RISC-V GNU Compiler Toolchain]
 :Python: https://www.python.org/[Python]
 :rustup: https://rustup.rs/[rustup]
@@ -222,7 +223,7 @@ cargo run --example rgbw-neopixel-stick-soft-blink
 
 == Examples
 
-rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for a stick of 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
+rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
 
 == Todo
 
