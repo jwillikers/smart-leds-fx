@@ -20,6 +20,7 @@ endif::[]
 :Linux: https://www.linuxfoundation.org/[Linux]
 :Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:NeoPixel-Triple-Ring-Board: https://www.adafruit.com/product/4222[NeoPixel Triple-Ring Board]
 :OpenOCD: https://openocd.org/[OpenOCD]
 :RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
 :RISC-V-GNU-Compiler-Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain[RISC-V GNU Compiler Toolchain]
@@ -186,7 +187,47 @@ sudo udevadm control --reload
 sudo udevadm trigger
 ----
 
-==== Flash
+=== Flash
+
+==== DFU-Util
+
+[source,sh]
+----
+lsusb
+Bus 001 Device 004: ID 27c6:533c Shenzhen Goodix Technology Co.,Ltd. FingerPrint
+----
+
+./etc/udev/rules.d/longan-nano.rules
+[source,udev]
+----
+# Longan Nano v1.1
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="27c6", ATTR{idProduct}=="533c", MODE="0666"
+----
+
+. Build the example.
++
+[source,sh]
+----
+cargo build --example rgbw-neopixel-stick-soft-blink
+----
+
+[source,sh]
+----
+riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
+----
+
+. Enter bootloader mode.
+
+. Send the payload.
++
+[source,sh]
+----
+dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
+----
+
+==== Cargo Embed
+
+Note that this isn't working yet.
 
 . First, attach the debug probe to the pins opposite the USB-C port of the Longan Nano.
 
@@ -224,6 +265,7 @@ cargo run --example rgbw-neopixel-stick-soft-blink
 == Examples
 
 rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
+rgb-neopixel-triple-ring-board-soft-blink:: A _{soft-blink}_ effect for an {NeoPixel-Triple-Ring-Board} with 44 RGB {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
 
 == Todo
 

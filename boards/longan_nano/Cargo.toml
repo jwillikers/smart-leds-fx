@@ -1,7 +1,7 @@
 [package]
-name = "longan_nano_example"
+name = "longan_nano_examples"
 version = "0.1.0"
-description = "A soft blink effect for the onboard Neopixel on the Longan Nano"
+description = "A soft blink effect for the onboard NeoPixel on the Longan Nano"
 authors = ["Jordan Williams <jordan@jwillikers.com>"]
 edition = "2018"
 keywords = ["dotstar", "embedded", "fx", "led", "neopixel", "no-std", "smart-leds", "ws2812"]
