@@ -21,7 +21,7 @@ smart-leds = "0.3.0"
 ws2812-spi = "0.4.0"
 
 [dependencies.smart-leds-fx]
-path = "../.."
+path = "../../smart-leds-fx"
 version = "0.1.0"
 
 [profile]
