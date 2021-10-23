@@ -1,5 +1,5 @@
 [package]
-name = "circuit-playground-bluefruit-example"
+name = "circuit_playground_bluefruit_example"
 version = "0.1.0"
 description = "Examples of lighting effects for the Circuit Playground Bluefruit"
 authors = ["Jordan Williams <jordan@jwillikers.com>"]

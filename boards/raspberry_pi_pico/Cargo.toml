@@ -1,5 +1,5 @@
 [package]
-name = "raspberry-pi-pico-example"
+name = "raspberry_pi_pico_example"
 version = "0.1.0"
 description = "A soft blink effect for the onboard Neopixel on the Raspberry Pi Pico"
 authors = ["Jordan Williams <jordan@jwillikers.com>"]

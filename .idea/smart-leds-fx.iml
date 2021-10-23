@@ -10,10 +10,16 @@
       <sourceFolder url="file://$MODULE_DIR$/boards/circuit-playground-express/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/boards/longan-nano/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/boards/longan-nano/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/boards/circuit_playground_express/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/boards/circuit_playground_express/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/boards/raspberry-pi-pico/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/boards/raspberry-pi-pico/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/boards/circuit-playground-express/target" />
       <excludeFolder url="file://$MODULE_DIR$/boards/circuit-playground-bluefruit/target" />
       <excludeFolder url="file://$MODULE_DIR$/boards/longan-nano/target" />
+      <excludeFolder url="file://$MODULE_DIR$/boards/raspberry-pi-pico/target" />
+      <excludeFolder url="file://$MODULE_DIR$/boards/circuit_playground_express/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
