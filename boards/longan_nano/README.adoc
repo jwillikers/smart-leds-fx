@@ -9,6 +9,7 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-Connector: https://www.adafruit.com/product/4801[Adafruit NeoPixel LED Strip with 3-pin JST Connector]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
 :dfu-util: http://dfu-util.sourceforge.net/[dfu-util]
 :Fedora: https://getfedora.org/[Fedora]
@@ -264,8 +265,9 @@ cargo run --example rgbw-neopixel-stick-soft-blink
 
 == Examples
 
-rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
-rgb-neopixel-triple-ring-board-soft-blink:: A _{soft-blink}_ effect for an {NeoPixel-Triple-Ring-Board} with 44 RGB {NeoPixel}s using the the SPI MOSI pin, pin A7, of the Longan Nano.
+rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
+rgb-neopixel-triple-ring-board-soft-blink:: A _{soft-blink}_ effect for an {NeoPixel-Triple-Ring-Board} with 44 RGB {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
+soft-blink-neopixel-strip:: A _{soft-blink}_ effect for a {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-Connector} with 30 RGB {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
 
 == Todo
 
