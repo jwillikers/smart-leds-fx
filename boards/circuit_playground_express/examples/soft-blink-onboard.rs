@@ -1,16 +1,18 @@
 #![no_std]
 #![no_main]
 
-use cortex_m_rt::entry;
+use circuit_playground_express::entry;
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
 
 use circuit_playground_express as hal;
-use hal::clock::GenericClockController;
-use hal::delay::Delay;
-use hal::pac::{CorePeripherals, Peripherals};
-use hal::prelude::*;
-use hal::timer::*;
+use circuit_playground_express::hal::clock::GenericClockController;
+use circuit_playground_express::hal::delay::Delay;
+use circuit_playground_express::hal::hal::blocking::delay::DelayMs;
+use circuit_playground_express::hal::hal::timer::CountDown;
+use circuit_playground_express::hal::pac::{CorePeripherals, Peripherals};
+use circuit_playground_express::hal::time::U32Ext;
+use circuit_playground_express::hal::timer::TimerCounter;
 
 use embedded_time::duration::*;
 use smart_leds::{
@@ -42,11 +44,15 @@ fn main() -> ! {
         &mut peripherals.SYSCTRL,
         &mut peripherals.NVMCTRL,
     );
-    let mut pins = hal::Pins::new(peripherals.PORT);
+    let pins = hal::Pins::new(peripherals.PORT);
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
-    let ws_data_pin = pins.neopixel.into_push_pull_output(&mut pins.port);
-    let timer = SpinTimer::new(3);
+    let gclk0 = clocks.gclk0();
+    let timer_clock = clocks.tcc2_tc3(&gclk0).unwrap();
+    let mut timer = TimerCounter::tc3_(&timer_clock, peripherals.TC3, &mut peripherals.PM);
+    timer.start(3.mhz());
+
+    let ws_data_pin: hal::NeoPixel = pins.d8.into();
     let mut ws = ws2812::Ws2812::new(timer, ws_data_pin);
 
     loop {
