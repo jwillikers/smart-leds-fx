@@ -10,6 +10,8 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :Adafruit: https://www.adafruit.com/[Adafruit]
+:Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector: https://www.adafruit.com/product/3919[Adafruit NeoPixel LED Strip with 3-pin JST PH Connector]
+:Adafruit-Prop-Maker-FeatherWing: https://learn.adafruit.com/adafruit-prop-maker-featherwing[Adafruit Prop-Maker FeatherWing]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
 :atsamd-rs-atsamd: https://github.com/atsamd-rs/atsamd/[atsamd-rs/atsamd]
 :cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
@@ -128,6 +130,9 @@ cargo embed --example soft-blink-onboard
 == Examples
 
 soft-blink-onboard:: A _{soft-blink}_ effect for the on-board {NeoPixel} LED on the Feather M4 Express.
+soft-blink-prop-maker-featherwing-neopixel-strip:: A _{soft-blink}_ effect for a set of 30 LED's on an {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector}.
+The strip's 3-pin JST PH cable plugs directly in to the {Adafruit-Prop-Maker-FeatherWing}, which supplies 5V of power and does logic-level shifting from 3.3V on the Feather M4 Express to 5V for the NeoPixels.
+Pin D10 is pulled high to enable the Prop-Maker's NeoPixel data line and pin D5 is used for the NeoPixel data.
 
 == Todo
 
