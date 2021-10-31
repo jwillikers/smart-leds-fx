@@ -1,4 +1,3 @@
-#![no_std]
 #![no_main]
 
 use cortex_m_rt::entry;
@@ -75,6 +74,7 @@ fn main() -> ! {
     let _power_switch = port0.p0_06.into_push_pull_output(Level::Low);
     let ws_data_pin = port0.p0_13.into_push_pull_output(Level::Low);
     let timer = SpinTimer::new(8);
+    let timer = TimerCounter::;
     let mut ws = ws2812::Ws2812::new(timer, ws_data_pin);
 
     loop {

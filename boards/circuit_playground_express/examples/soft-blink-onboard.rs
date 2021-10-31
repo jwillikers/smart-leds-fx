@@ -1,25 +1,24 @@
-#![no_std]
 #![no_main]
 
-use circuit_playground_express::entry;
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
 
-use circuit_playground_express as hal;
-use circuit_playground_express::hal::clock::GenericClockController;
-use circuit_playground_express::hal::delay::Delay;
-use circuit_playground_express::hal::hal::blocking::delay::DelayMs;
-use circuit_playground_express::hal::hal::timer::CountDown;
-use circuit_playground_express::hal::pac::{CorePeripherals, Peripherals};
-use circuit_playground_express::hal::time::U32Ext;
-use circuit_playground_express::hal::timer::TimerCounter;
+use bsp::entry;
+use bsp::hal;
+use circuit_playground_express as bsp;
+use hal::blocking::delay::DelayMs;
+use hal::delay::Delay;
+use hal::pac::{CorePeripherals, Peripherals};
+use hal::time::U32Ext;
+use hal::timer::CountDown;
+use hal::timer::TimerCounter;
 
 use embedded_time::duration::*;
 use smart_leds::{
     hsv::{hsv2rgb, Hsv},
     SmartLedsWrite, RGB,
 };
-use ws2812_timer_delay as ws2812;
+use ws2812_timer_delay::Ws2812;
 
 use smart_leds_fx::colors::HsColor;
 use smart_leds_fx::colors::RESTFUL_ORANGE;
@@ -53,7 +52,7 @@ fn main() -> ! {
     timer.start(3.mhz());
 
     let ws_data_pin: hal::NeoPixel = pins.d8.into();
-    let mut ws = ws2812::Ws2812::new(timer, ws_data_pin);
+    let mut ws = Ws2812::new(timer, ws_data_pin);
 
     loop {
         for j in brightness_range {

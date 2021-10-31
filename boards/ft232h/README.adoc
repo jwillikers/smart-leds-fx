@@ -1,0 +1,138 @@
+= FT232H Examples
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Adafruit: https://www.adafruit.com/[Adafruit]
+:Adafruit-FT232H-Breakout: https://learn.adafruit.com/adafruit-ft232h-breakout[Adafruit FT232H Breakout]
+:Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector: https://www.adafruit.com/product/3919[Adafruit NeoPixel LED Strip with 3-pin JST PH Connector]
+:Adafruit-Prop-Maker-FeatherWing: https://learn.adafruit.com/adafruit-prop-maker-featherwing[Adafruit Prop-Maker FeatherWing]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:atsamd-rs-atsamd: https://github.com/atsamd-rs/atsamd/[atsamd-rs/atsamd]
+:cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
+:cargo-hf2: https://github.com/jacobrosenthal/hf2-rs[cargo-hf2]
+:Feather-M4-Express: https://www.adafruit.com/product/3857[Feather M4 Express]
+:fish: https://fishshell.com/[fish]
+:Git: https://git-scm.com/[Git]
+:Linux: https://www.linuxfoundation.org/[Linux]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:probe-rs: https://probe.rs/[probe-rs]
+:Python: https://www.python.org/[Python]
+:Rouge: https://rouge.jneen.net/[Rouge]
+:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+
+Examples of lighting effects using the {Adafruit-FT232H-Breakout}.
+
+[NOTE]
+====
+These don't yet work and are being developed.
+====
+
+== Setup
+
+. First, clone the repository.
++
+[source,sh]
+----
+git clone https://github.com/jwillikers/smart-leds-fx.git
+----
+
+. Change to the project's directory.
++
+[source,sh]
+----
+cd smart-leds-fx/boards/ft232h
+----
+
+. Install `libftdi` which provides the necessary Udev rules to access the FT232H Breakout.
++
+[source,sh]
+----
+sudo dnf install libftdi-devel
+----
+
+. On Fedora, the `ftdi_sio` module causes issues, so unload it each time plugging it in.
++
+[source,sh]
+----
+sudo rmmod ftdi_sio
+----
+
+[NOTE]
+----
+You may have to reset your EEPROM if it's for some reason corrupted.
+Mine was.
+----
+
+== Program
+
+The Adafruit FT232H Breakout can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
+
+. Use `cargo run` to run an example.
++
+[source,sh]
+----
+cargo run --example soft-blink-neopixel-strip
+----
+
+== Examples
+
+//soft-blink-neopixel-strip:: A _{soft-blink}_ effect for the on-board {NeoPixel} LED on the.
+
+== Todo
+
+* Improve power consumption by using sleep modes and disabling unused peripherals.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {cargo-embed}
+* {cargo-hf2}
+* {fish}
+* {Git}
+* {Linux}
+* {atsamd-rs-atsamd}
+* {probe-rs}
+* {Python}
+* {Rouge}
+* {Ruby}
+* {Rust}
+* {smart-leds}
+
+== Code of Conduct
+
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+Licensed under either of
+
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+
+at your option.
+
+© 2021 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]
+
