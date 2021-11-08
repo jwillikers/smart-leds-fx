@@ -4,26 +4,26 @@ version = "0.1.0"
 description = "Lighting effects for LED's using the Adafruit FT232H Breakout"
 authors = ["Jordan Williams <jordan@jwillikers.com>"]
 edition = "2018"
-keywords = ["adafruit", "dotstar", "embedded", "ft232h", "ftdi", "fx", "led", "neopixel", "smart-leds", "ws2812"]
+keywords = ["adafruit", "dotstar", "embedded", "ft232h", "ftdi", "fx", "led", "libftdi", "neopixel", "smart-leds", "ws2812"]
 license = "MIT OR Apache-2.0"
 readme = "README.adoc"
 repository = "https://github.com/jwillikers/smart-leds-fx"
 
 [dependencies]
-#embedded-hal = "1.0.0-alpha.5"
+ftdi = "0.1.3"
 smart-leds = "0.3.0"
 ws2812-spi = "0.4.0"
 
-#[dependencies.ftd2xx-embedded-hal]
 [dependencies.ftdi-embedded-hal]
-git = "https://github.com/ftdi-rs/ftdi-embedded-hal/"
-#version = "0.9.1"
-features = ["static"]
+#git = "https://github.com/ftdi-rs/ftdi-embedded-hal/"
+git = "https://github.com/geomatsi/ftdi-embedded-hal/"
+branch = "generic-backend-support"
+#features = ["ftdi"]
 
 [dependencies.smart-leds-fx]
 path = "../../smart-leds-fx"
 version = "0.1.0"
-#
+
 #[profile]
 #[profile.dev]
 #codegen-units = 1

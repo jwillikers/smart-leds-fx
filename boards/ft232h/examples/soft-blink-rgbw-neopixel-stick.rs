@@ -1,12 +1,8 @@
-use ftdi_embedded_hal::Delay;
-use ftdi_embedded_hal::Ft232hHal;
-use std::time::Duration;
-
-use ftdi_embedded_hal::embedded_hal::blocking::delay::DelayMs;
-use ftdi_embedded_hal::embedded_hal::spi::Polarity;
-use ftdi_embedded_hal::libftd2xx::{
-    list_devices, num_devices, Ft232h, FtStatus, Ftdi, FtdiCommon, FtdiMpsse, MpsseSettings,
-};
+use ftdi_embedded_hal as hal;
+use ftdi_embedded_hal::ftdi_mpsse::MpsseSettings;
+use hal::embedded_hal::blocking::delay::DelayMs;
+use hal::embedded_hal::spi::Polarity;
+use hal::Delay;
 use smart_leds::{
     hsv::{hsv2rgb, Hsv},
     SmartLedsWrite, White, RGB8, RGBW,
@@ -14,10 +10,11 @@ use smart_leds::{
 use smart_leds_fx::colors::HsColor;
 use smart_leds_fx::colors::RESTFUL_ORANGE;
 use smart_leds_fx::iterators::BrightnessRange;
+use std::time::Duration;
 use ws2812_spi::Ws2812;
 
-fn main() -> Result<(), FtStatus> {
-    const DELAY: u32 = 8;
+fn main() -> ! {
+    const DELAY: u32 = 4;
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
     const NUM_LEDS: usize = 8;
     debug_assert_ne!(NUM_LEDS, 0);
@@ -26,42 +23,56 @@ fn main() -> Result<(), FtStatus> {
 
     let mut delay: Delay = Delay::new();
 
-    // let num_devices = num_devices().unwrap();
+    // let num_devices = hal::num_devices().unwrap();
     // println!("Number of devices: {}", num_devices);
 
     // AD0 => SCK
     // AD1 => MOSI
     // AD2 => MISO
-    // let ft = Ft232hHal::new().unwrap();
-    // let mut ft = Ftdi::new().unwrap();
-    //
+    // let ft = hal::FtHal::new().unwrap();
+    // let mut ft = hal::Ftdi::new().unwrap();
+
     // let dev_type = ft.device_type().unwrap();
     // println!("Device type: {:?}", dev_type);
-    //
+
     // let info = ft.device_info().unwrap();
     // println!("Device information: {:?}", info);
-    //
+
     // ft.close().unwrap();
 
-    let ft = Ft232hHal::new().unwrap();
-    let config: MpsseSettings = MpsseSettings {
-        //     reset: true,
-        // in_transfer_size: 128,
-        // in_transfer_size: 16384,
-        // in_transfer_size: 32768,
-        // read_timeout: Duration::from_millis(100),
-        // write_timeout: Duration::from_millis(100),
-        // latency_timer: Duration::from_millis(8),
-        // clock_frequency: Some(6_400_000u32),
-        clock_frequency: Some(3_000_000u32),
-        //     clock_frequency: Some(100_000u32),
-        //     mask: 0x00,
-        ..Default::default()
-    };
-    let ftdi = ft.init(&config).unwrap();
+    // let device = hal::FtHal::new().unwrap();
+
+    let mut device: ftdi::Device = ftdi::find_by_vid_pid(0x0403, 0x6014)
+        .interface(ftdi::Interface::A)
+        .open()
+        .unwrap();
+
+    // device.libftdi_context().
+
+    // device.usb_reset().unwrap();
+    // device.usb_purge_buffers().unwrap();
+    // device.set_latency_timer(2).unwrap();
+    // let config: MpsseSettings = MpsseSettings {
+    //     reset: true,
+    //     // in_transfer_size: 128,
+    //     // in_transfer_size: 16384,
+    //     // in_transfer_size: 32768,
+    //     // read_timeout: Duration::from_millis(100),
+    //     // write_timeout: Duration::from_millis(100),
+    //     // latency_timer: Duration::from_millis(8),
+    //     // clock_frequency: Some(6_400_000u32),
+    //     clock_frequency: Some(3_000_000u32),
+    //     // clock_frequency: Some(100_000u32),
+    //     // mask: 0x00,
+    //     ..Default::default()
+    // };
+    // let ft = device.init(&config).unwrap();
     // let ftdi = ft.init_default().unwrap();
-    let mut spi = ftdi.spi().unwrap();
+    // let ft = hal::FtHal::init(device, &config).unwrap();
+    let ft = hal::FtHal::init_freq(device, 3_000_000).unwrap();
+    let mut spi = ft.spi().unwrap();
     spi.set_clock_polarity(Polarity::IdleLow);
+
     let mut neopixel = Ws2812::new_sk6812w(spi);
 
     loop {

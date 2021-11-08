@@ -12,31 +12,20 @@ endif::[]
 :Adafruit: https://www.adafruit.com/[Adafruit]
 :Adafruit-FT232H-Breakout: https://learn.adafruit.com/adafruit-ft232h-breakout[Adafruit FT232H Breakout]
 :Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector: https://www.adafruit.com/product/3919[Adafruit NeoPixel LED Strip with 3-pin JST PH Connector]
-:Adafruit-Prop-Maker-FeatherWing: https://learn.adafruit.com/adafruit-prop-maker-featherwing[Adafruit Prop-Maker FeatherWing]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
-:atsamd-rs-atsamd: https://github.com/atsamd-rs/atsamd/[atsamd-rs/atsamd]
-:cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
-:cargo-hf2: https://github.com/jacobrosenthal/hf2-rs[cargo-hf2]
-:Feather-M4-Express: https://www.adafruit.com/product/3857[Feather M4 Express]
+:ftdi-embedded-hal: https://github.com/ftdi-rs/ftdi-embedded-hal/[ftdi-embedded-hal]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
+:libftdi: https://www.intra2net.com/en/developer/libftdi/index.php[libftdi]
 :Linux: https://www.linuxfoundation.org/[Linux]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
-:probe-rs: https://probe.rs/[probe-rs]
-:Python: https://www.python.org/[Python]
-:Rouge: https://rouge.jneen.net/[Rouge]
-:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
 :Rust: https://www.rust-lang.org/[Rust]
 :rustup: https://rustup.rs/[rustup]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
 
-Examples of lighting effects using the {Adafruit-FT232H-Breakout}.
-
-[NOTE]
-====
-These don't yet work and are being developed.
-====
+Examples of lighting effects for the {Adafruit-FT232H-Breakout}.
 
 == Setup
 
@@ -54,31 +43,18 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 cd smart-leds-fx/boards/ft232h
 ----
 
-. Install `libftdi` which provides the necessary Udev rules to access the FT232H Breakout.
+. Install the required {libftdi} package, which conveniently provides the necessary Udev rules to access the FT232H Breakout.
 +
 [source,sh]
 ----
-sudo dnf install libftdi-devel
+sudo dnf -y install libftdi-devel
 ----
 
-. On Fedora, the `ftdi_sio` module causes issues, so unload it each time plugging it in.
-+
-[source,sh]
-----
-sudo rmmod ftdi_sio
-----
+== Usage
 
-[NOTE]
-----
-You may have to reset your EEPROM if it's for some reason corrupted.
-Mine was.
-----
+. Attach the Adafruit FT232H Breakout to your computer via its USB-C port.
 
-== Program
-
-The Adafruit FT232H Breakout can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
-
-. Use `cargo run` to run an example.
+. Now just use `cargo run --example` to run an example.
 +
 [source,sh]
 ----
@@ -87,11 +63,9 @@ cargo run --example soft-blink-neopixel-strip
 
 == Examples
 
-//soft-blink-neopixel-strip:: A _{soft-blink}_ effect for the on-board {NeoPixel} LED on the.
-
-== Todo
-
-* Improve power consumption by using sleep modes and disabling unused peripherals.
+soft-blink-neopixel-strip:: A _{soft-blink}_ effect for a {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-Connector} with 30 RGB {NeoPixel}'s.
+The SPI MOSI pin, pin D1, on the FT232H sends the NeoPixel data.
+soft-blink-rgbw-neopixel-stick:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the SPI MOSI pin, pin D1, on the FT232H.
 
 == Contributing
 
@@ -104,16 +78,11 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
-* {cargo-embed}
-* {cargo-hf2}
 * {fish}
 * {Git}
+* {libftdi}
 * {Linux}
-* {atsamd-rs-atsamd}
-* {probe-rs}
-* {Python}
-* {Rouge}
-* {Ruby}
+* {ftdi-embedded-hal}
 * {Rust}
 * {smart-leds}
 
