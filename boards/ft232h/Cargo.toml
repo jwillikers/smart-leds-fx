@@ -15,9 +15,8 @@ smart-leds = "0.3.0"
 ws2812-spi = "0.4.0"
 
 [dependencies.ftdi-embedded-hal]
-#git = "https://github.com/ftdi-rs/ftdi-embedded-hal/"
-git = "https://github.com/geomatsi/ftdi-embedded-hal/"
-branch = "generic-backend-support"
+git = "https://github.com/ftdi-rs/ftdi-embedded-hal/"
+version = "0.10.0"
 #features = ["ftdi"]
 
 [dependencies.smart-leds-fx]
