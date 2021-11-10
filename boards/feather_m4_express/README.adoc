@@ -55,6 +55,18 @@ cd smart-leds-fx/boards/feather_m4_express
 rustup target add thumbv7em-none-eabihf
 ----
 
+. Install the following Udev rules to allow access to various Adafruit boards without requiring superuser privileges.
++
+./etc/udev/rules.d/99-adafruit-boards.rules
+[source,udev]
+----
+ATTRS{idVendor}=="239a", ENV{ID_MM_DEVICE_IGNORE}="1"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="239a", MODE="0666"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="239a", MODE="0666"
+----
+
+. Unplug your Feather M4 Express and plug it back in for the Udev rules to take effect.
+
 == Program
 
 The Feather M4 Express can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
@@ -130,9 +142,13 @@ cargo embed --example soft-blink-onboard
 == Examples
 
 soft-blink-onboard:: A _{soft-blink}_ effect for the on-board {NeoPixel} LED on the Feather M4 Express.
-soft-blink-prop-maker-featherwing-neopixel-strip:: A _{soft-blink}_ effect for a set of 30 LED's on an {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector}.
+soft-blink-prop-maker-featherwing-neopixel-strip:: A _{soft-blink}_ effect for a set of 30 LEDs on an {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector}.
 The strip's 3-pin JST PH cable plugs directly in to the {Adafruit-Prop-Maker-FeatherWing}, which supplies 5V of power and does logic-level shifting from 3.3V on the Feather M4 Express to 5V for the NeoPixels.
 Pin D10 is pulled high to enable the Prop-Maker's NeoPixel data line and pin D5 is used for the NeoPixel data.
+christmas-soft-blink-prop-maker-featherwing-neopixel-strip:: A _{soft-blink}_ effect alternating green and red pulses over a set of 30 LEDs on an {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector}.
+The strip's 3-pin JST PH cable plugs directly in to the {Adafruit-Prop-Maker-FeatherWing}, which supplies 5V of power and does logic-level shifting from 3.3V on the Feather M4 Express to 5V for the NeoPixels.
+Pin D10 is pulled high to enable the Prop-Maker's NeoPixel data line and pin D5 is used for the NeoPixel data.
+
 
 == Todo
 
