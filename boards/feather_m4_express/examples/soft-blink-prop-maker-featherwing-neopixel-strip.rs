@@ -1,16 +1,17 @@
+#![no_std]
 #![no_main]
 
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
 
-use embedded_time::duration::*;
-use feather_m4 as bsp;
 use bsp::entry;
 use bsp::hal;
+use embedded_time::duration::*;
+use feather_m4 as bsp;
 use hal::clock::GenericClockController;
-use hal::prelude::*;
 use hal::delay::Delay;
 use hal::pac::{CorePeripherals, Peripherals};
+use hal::prelude::*;
 use hal::thumbv7em::timer::TimerCounter;
 use hal::time::U32Ext;
 
