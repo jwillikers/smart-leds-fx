@@ -1,0 +1,123 @@
+= ESP32-C3-DevKitC-02 Examples
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
+:ESP32-C3-DevKitC-02: https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/hw-reference/esp32c3/user-guide-devkitc-02.html[ESP32-C3-DevKitC-02]
+:esp32c3-hal: https://github.com/esp-rs/esp-hal/tree/main/esp32c3-hal[esp32c3-hal]
+:espflash: https://github.com/esp-rs/espflash[espflash]
+:fish: https://fishshell.com/[fish]
+:Git: https://git-scm.com/[Git]
+:Linux: https://www.linuxfoundation.org/[Linux]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:Python: https://www.python.org/[Python]
+:RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
+:Rouge: https://rouge.jneen.net/[Rouge]
+:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
+
+Examples of lighting effects for the {ESP32-C3-DevKitC-02}.
+
+== Setup
+
+. First, clone the repository.
++
+[source,sh]
+----
+git clone https://github.com/jwillikers/smart-leds-fx.git
+----
+
+. Change to the project's directory.
++
+[source,sh]
+----
+cd smart-leds-fx/boards/esp32_c3_devkit_02
+----
+
+. Install the Rust toolchain for the ESP32-C3-DevKitC-02.
++
+[source,sh]
+----
+rustup target add riscv32imac-unknown-none-elf
+----
+
+. Install the `espflash` crate.
++
+[source,sh]
+----
+cargo install espflash
+----
+
+. Attach the ESP32-C3-DevKitC-02 to your computer using the micro USB port.
+
+. Flash the board using the Cargo `run` subcommand.
++
+[source,sh]
+----
+cargo run --example rgbw-neopixel-stick-high-low-soft-blink --release
+----
+
+== Examples
+
+rgbw-neopixel-stick-high-low-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the SPI MOSI pin GPIO7 on the ESP32-C3-DevKitC-02.
+Each LED alternates in color and the rise and fall of the soft blink effect.
+
+== Todo
+
+* Document how to debug the program over USB using OpenOCD provided by ESP-IDF.
+* Improve power consumption by using sleep modes and disabling unused peripherals.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {esp32c3-hal}
+* {espflash}
+* {fish}
+* {Git}
+* {Linux}
+* {Python}
+* {Rouge}
+* {Ruby}
+* {Rust}
+* {smart-leds}
+* {ws2812-spi-rs}
+
+== Code of Conduct
+
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+Licensed under either of
+
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+
+at your option.
+
+© 2022 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]
+
