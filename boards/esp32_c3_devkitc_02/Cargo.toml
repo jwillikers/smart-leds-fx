@@ -5,17 +5,17 @@ authors = ["Jordan Williams <jordan@jwillikers.com>"]
 description = "Examples of lighting effects for ESP32-C3-DevKitC-02"
 keywords = ["dotstar", "embedded", "esp", "esp32", "esp32c3", "fx", "led", "m4", "neopixel", "no-std", "riscv", "smart-leds", "ws2812"]
 license = "MIT OR Apache-2.0"
-edition = "2018"
+edition = "2021"
 readme = "README.adoc"
 repository = "https://github.com/jwillikers/smart-leds-fx"
 
 [dependencies]
 embedded-hal = { version = "0.2", features = ["unproven"] }
-embedded-time = "0.12.0"
-esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal.git", features = ["ufmt"] }
-riscv-rt = "0.8"
+embassy-time = { version = "0.1.0", features = ["nightly"], optional = true }
+esp-backtrace = { version = "0.2.0", features = ["esp32c3", "panic-handler", "exception-handler", "print-uart"] }
+esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal.git", features = ["ufmt", "mcu-boot"] }
+riscv-rt = "0.10.0"
 smart-leds = "0.3.0"
-panic-halt = "0.2"
 ws2812-spi = "0.4.0"
 
 [dependencies.smart-leds-fx]
@@ -23,12 +23,4 @@ path = "../../smart-leds-fx"
 version = "0.1.0"
 
 [profile.dev]
-incremental = false
-codegen-units = 1
-debug = true
-lto = true
-
-[profile.release]
-debug = true
-lto = true
-opt-level = "s"
+opt-level = 1

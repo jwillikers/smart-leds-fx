@@ -48,30 +48,81 @@ cd smart-leds-fx/boards/esp32_c3_devkit_02
 
 . Install the Rust toolchain for the ESP32-C3-DevKitC-02.
 +
-[source,sh]
+[,sh]
 ----
-rustup target add riscv32imac-unknown-none-elf
+rustup target add riscv32imc-unknown-none-elf
 ----
 
-. Install the `espflash` crate.
+. Install `cargo-binutils` in order to convert the ELF file to the Intel HEX format.
++
+[,sh]
+----
+cargo install cargo-binutils
+rustup component add llvm-tools-preview
+----
+
+. Install MCUboot's command-line tool for image signing and key management.
++
+[,sh]
+----
+pip install imgtool
+----
+
+. Install `esptool`.
++
+[,sh]
+----
+pip install esptool
+----
+
+. Download an MCUboot bootloader for the ESP32-C3.
++
+[,sh]
+----
+curl -LO https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/mcuboot-esp32c3.bin
+----
+
+. Build the desired example using the Cargo `build` subcommand.
 +
 [source,sh]
 ----
-cargo install espflash
+cargo build --example rgbw-neopixel-stick-high-low-soft-blink --release
+----
+
+. Convert the ELF file to a file named `app.hex` in the Intel HEX format.
++
+[,sh]
+----
+rust-objcopy -O ihex target/riscv32imc-unknown-none-elf/release/examples/rgbw-neopixel-stick-high-low-soft-blink app.hex
+----
+
+. Create the application payload for MCUboot.
++
+[,sh]
+----
+imgtool sign --pad --align 4 -v 0 -s auto -H 32 --pad-header -S 0x100000 app.hex app.bin
 ----
 
 . Attach the ESP32-C3-DevKitC-02 to your computer using the micro USB port.
 
-. Flash the board using the Cargo `run` subcommand.
+. Flash the firmware image to the ESP32-C3.
 +
-[source,sh]
+[,sh]
 ----
-cargo run --example rgbw-neopixel-stick-high-low-soft-blink --release
+esptool.py -c esp32c3 -p /dev/ttyUSB0 -b 921600 --after no_reset write_flash -fs 4MB -fm dio -ff 40m 0x0 ./mcuboot-esp32c3.bin 0x110000 ./app.bin
 ----
+
+. Click the reset button on the ESP32-C3-DevKitC-02 to boot the example.
 
 == Examples
 
 rgbw-neopixel-stick-high-low-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the SPI MOSI pin GPIO7 on the ESP32-C3-DevKitC-02.
+Each LED alternates in color and the rise and fall of the soft blink effect.
+
+rgbw-neopixel-strand-high-low-soft-blink:: A _{soft-blink}_ effect for an RGBW NeoPixel Strand with 240 RGBW {NeoPixel}s using the SPI MOSI pin GPIO7 on the ESP32-C3-DevKitC-02.
+Each LED alternates in color and the rise and fall of the soft blink effect.
+
+rgbw-neopixel-strand-white:: A simple example for setting an RGBW NeoPixel Strand with 240 RGBW {NeoPixel}s using the SPI MOSI pin GPIO7 on the ESP32-C3-DevKitC-02.
 Each LED alternates in color and the rise and fall of the soft blink effect.
 
 == Todo

@@ -29,9 +29,9 @@ fn main() -> ! {
     const DELAY: u8 = 4;
     const FIRST_LED_COLOR: HsColor<u8> = CHRISTMAS_GREEN;
     const SECOND_LED_COLOR: HsColor<u8> = RED;
-    const NUM_LEDS: usize = 8;
+    const NUM_LEDS: usize = 240;
 
-    let brightness_range = BrightnessRange::new(1, 254, 1);
+    let brightness_range = BrightnessRange::new(1, 75, 1);
 
     let peripherals = Peripherals::take().unwrap();
     let mut system = peripherals.SYSTEM.split();

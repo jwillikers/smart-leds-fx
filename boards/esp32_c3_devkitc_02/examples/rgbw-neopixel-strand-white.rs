@@ -16,22 +16,14 @@ use esp32c3_hal::{
 };
 
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, White, RGB, RGBW,
+    SmartLedsWrite, White, RGBW,
 };
-use smart_leds_fx::colors::RED;
-use smart_leds_fx::colors::{HsColor, CHRISTMAS_GREEN};
-use smart_leds_fx::iterators::BrightnessRange;
 use ws2812_spi::Ws2812;
 
 #[entry]
 fn main() -> ! {
     const DELAY: u8 = 4;
-    const FIRST_LED_COLOR: HsColor<u8> = CHRISTMAS_GREEN;
-    const SECOND_LED_COLOR: HsColor<u8> = RED;
-    const NUM_LEDS: usize = 8;
-
-    let brightness_range = BrightnessRange::new(1, 254, 1);
+    const NUM_LEDS: usize = 240;
 
     let peripherals = Peripherals::take().unwrap();
     let mut system = peripherals.SYSTEM.split();
@@ -74,35 +66,14 @@ fn main() -> ! {
     let mut ws = Ws2812::new_sk6812w(spi);
 
     loop {
-        for j in brightness_range {
-            let first_rgb: RGB<u8> = hsv2rgb(Hsv {
-                hue: FIRST_LED_COLOR.hue,
-                sat: FIRST_LED_COLOR.saturation,
-                val: j,
-            });
-            let second_rgb: RGB<u8> = hsv2rgb(Hsv {
-                hue: SECOND_LED_COLOR.hue,
-                sat: SECOND_LED_COLOR.saturation,
-                val: 254 - j,
-            });
-            let first_rgbw: RGBW<u8> = RGBW {
-                r: first_rgb.r,
-                g: first_rgb.g,
-                b: first_rgb.b,
-                a: White(j / 20),
-            };
-            let second_rgbw: RGBW<u8> = RGBW {
-                r: second_rgb.r,
-                g: second_rgb.g,
-                b: second_rgb.b,
-                a: White((254 - j) / 20),
-            };
-            let mut data = [first_rgbw; NUM_LEDS];
-            for led in data.iter_mut().skip(1).step_by(2) {
-                *led = second_rgbw.clone();
-            }
-            ws.write(data.iter().cloned()).unwrap();
-            delay.delay_ms(DELAY);
-        }
+        let first_rgbw: RGBW<u8> = RGBW {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: White(175),
+        };
+        let data = [first_rgbw; NUM_LEDS];
+        ws.write(data.iter().cloned()).unwrap();
+        delay.delay_ms(DELAY);
     }
 }
