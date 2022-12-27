@@ -35,56 +35,56 @@ The instructions provided here are meant for users of Fedora Linux.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/smart-leds-fx.git
 ----
 
 . Change to the project's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx/boards/microbit-v2
 ----
 
 . Install the Rust toolchain for the micro:bit v2.
 +
-[source,sh]
+[,sh]
 ----
 rustup target add thumbv7em-none-eabihf
 ----
 
 . Install required packages for {cargo-embed}.
 +
-[source,sh]
+[,sh]
 ----
 sudo dnf -y install libusbx-devel systemd-devel
 ----
 
 . Install the `cargo-embed` utility.
 +
-[source,sh]
+[,sh]
 ----
 cargo install cargo-embed
 ----
 
 . Install the required Udev rules.
 +
-[source,sh]
+[,sh]
 ----
 wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
 ----
 
 . Load the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm control --reload
 ----
 
 . Apply the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm trigger
 ----
@@ -93,7 +93,7 @@ sudo udevadm trigger
 
 . Use cargo-embed to build, flash, and launch an example.
 +
-[source,sh]
+[,sh]
 ----
 cargo embed --example soft-blink-neopixel-strip
 ----

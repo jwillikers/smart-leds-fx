@@ -34,14 +34,14 @@ Examples of lighting effects for the {ESP32-C3-DevKitC-02}.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/smart-leds-fx.git
 ----
 
 . Change to the project's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx/boards/esp32_c3_devkit_02
 ----
@@ -84,7 +84,7 @@ curl -LO https://github.com/espressif/esp-nuttx-bootloader/releases/download/lat
 
 . Build the desired example using the Cargo `build` subcommand.
 +
-[source,sh]
+[,sh]
 ----
 cargo build --example rgbw-neopixel-stick-high-low-soft-blink --release
 ----

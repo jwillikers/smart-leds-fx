@@ -36,35 +36,35 @@ Examples of lighting effects for the {Raspberry-Pi-Pico}.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/smart-leds-fx.git
 ----
 
 . Change to the board's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx/boards/raspberry-pi-pico
 ----
 
 . Install the {Rust} toolchain for the Raspberry Pi Pico.
 +
-[source,sh]
+[,sh]
 ----
 rustup target add thumbv6m-none-eabi
 ----
 
 . Install `probe-run-rp` until support lands in upstream {probe-run}.
 +
-[source,sh]
+[,sh]
 ----
 cargo install --git https://github.com/rp-rs/probe-run --branch main
 ----
 
 . Install {flip-link}
 +
-[source,sh]
+[,sh]
 ----
 cargo install flip-link
 ----
@@ -79,7 +79,7 @@ The Raspberry Pi Pico can be programmed directly through its micro USB port or u
 
 . Install the `elf2uf2-rs` crate.
 +
-[source,sh]
+[,sh]
 ----
 cargo install elf2uf2-rs
 ----
@@ -88,7 +88,7 @@ cargo install elf2uf2-rs
 
 . Flash the board using Cargo's `run` subcommand.
 +
-[source,sh]
+[,sh]
 ----
 cargo run --example rgbw-neopixel-stick-soft-blink
 ----
@@ -111,7 +111,7 @@ runner = "probe-run-rp --chip RP2040"
 
 . Now just run an example with `cargo run`.
 +
-[source,sh]
+[,sh]
 ----
 cargo run --example rgbw-neopixel-stick-soft-blink
 ----
@@ -127,7 +127,7 @@ To use the `picoprobe` to flash and debug the examples, follow these instruction
 
 . Download and install the `picoprobe` firmware: https://github.com/majbthrd/DapperMime/releases/download/20210225/raspberry_pi_pico-DapperMime.uf2.
 +
-[source,sh]
+[,sh]
 ----
 wget -LP /run/media/$USER/RPI-RP2/ https://github.com/majbthrd/DapperMime/releases/download/20210225/raspberry_pi_pico-DapperMime.uf2
 ----
@@ -136,7 +136,7 @@ wget -LP /run/media/$USER/RPI-RP2/ https://github.com/majbthrd/DapperMime/releas
 
 == Examples
 
-rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} containing 8 RGBW {NeoPixel}s using the the SPI MOSI pin, pin GPIO7, of the Raspberry Pi Pico.
+rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} containing 8 RGBW {NeoPixel}s using the SPI MOSI pin, pin GPIO7, of the Raspberry Pi Pico.
 
 == Todo
 

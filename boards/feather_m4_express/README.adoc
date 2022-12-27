@@ -36,21 +36,21 @@ Examples of lighting effects for {Adafruit}'s {Feather-M4-Express}.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/smart-leds-fx.git
 ----
 
 . Change to the project's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx/boards/feather_m4_express
 ----
 
 . Install the Rust toolchain for the Feather M4 Express.
 +
-[source,sh]
+[,sh]
 ----
 rustup target add thumbv7em-none-eabihf
 ----
@@ -77,7 +77,7 @@ The Feather M4 Express can be programmed directly over the USB using the UF2 boo
 
 . Install the {cargo-hf2} utility.
 +
-[source,sh]
+[,sh]
 ----
 cargo install cargo-hf2
 ----
@@ -88,7 +88,7 @@ cargo install cargo-hf2
 
 . Flash the board using the `hf2` Cargo subcommand.
 +
-[source,sh]
+[,sh]
 ----
 cargo hf2 --example soft-blink-onboard --release
 ----
@@ -97,35 +97,35 @@ cargo hf2 --example soft-blink-onboard --release
 
 . Install required packages for {cargo-embed}.
 +
-[source,sh]
+[,sh]
 ----
 sudo dnf -y install libusbx-devel systemd-devel
 ----
 
 . Install the `cargo-embed` utility.
 +
-[source,sh]
+[,sh]
 ----
 cargo install cargo-embed
 ----
 
 . Install the required Udev rules.
 +
-[source,sh]
+[,sh]
 ----
 wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
 ----
 
 . Load the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm control --reload
 ----
 
 . Apply the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm trigger
 ----
@@ -134,7 +134,7 @@ sudo udevadm trigger
 
 . Use cargo-embed to flash an example.
 +
-[source,sh]
+[,sh]
 ----
 cargo embed --example soft-blink-onboard
 ----

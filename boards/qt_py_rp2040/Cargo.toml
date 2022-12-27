@@ -1,0 +1,27 @@
+[package]
+name = "qt_py_rp2040_example"
+version = "0.1.0"
+description = "A soft blink effect for the onboard Neopixel on the Adafruit QT Py RP2040"
+authors = ["Jordan Williams <jordan@jwillikers.com>"]
+edition = "2021"
+keywords = ["dotstar", "embedded", "fx", "led", "neopixel", "no-std", "smart-leds", "ws2812"]
+license = "MIT OR Apache-2.0"
+readme = "README.adoc"
+repository = "https://github.com/jwillikers/smart-leds-fx"
+resolver = "2"
+
+[dependencies]
+cortex-m = "0.7.3"
+cortex-m-rt = "0.7.2"
+embedded-hal = { version = "0.2.7", features=["unproven"] }
+rp2040-boot2 = { version = "0.2.0", optional = true }
+fugit = "0.3.6"
+nb = "1.0.0"
+panic-halt= "0.2.0"
+adafruit-qt-py-rp2040 = "0.5.0"
+smart-leds = "0.3.0"
+ws2812-pio = "0.5.0"
+
+[dependencies.smart-leds-fx]
+path = "../../smart-leds-fx"
+version = "0.1.0"

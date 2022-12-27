@@ -39,21 +39,21 @@ Examples of lighting effects for {Adafruit}'s {Circuit-Playground-Bluefruit}.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/smart-leds-fx.git
 ----
 
 . Change to the project's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx/boards/circuit-playground-bluefruit
 ----
 
 . Install the Rust toolchain for the Circuit Playground Bluefruit.
 +
-[source,sh]
+[,sh]
 ----
 rustup target add thumbv7em-none-eabihf
 ----
@@ -71,14 +71,14 @@ It is still possible to flash UF2 payloads via drag-n-drop, though it requires m
 
 . Install the LLVM tools preview.
 +
-[source,sh]
+[,sh]
 ----
 rustup component add llvm-tools-preview
 ----
 
 . Install the {cargo-objcopy} and {uf2conv-rs} utilities.
 +
-[source,sh]
+[,sh]
 ----
 cargo install cargo-objcopy uf2conv
 ----
@@ -91,21 +91,21 @@ The Circuit Playground Bluefruit should appear on your computer as an attached U
 
 . Now build a binary, `.bin`, executable for your chosen example using cargo-objcopy.
 +
-[source,sh]
+[,sh]
 ----
 cargo objcopy --example soft-blink-onboard --release -- -O binary soft-blink-onboard.bin
 ----
 
 . Convert the binary file to UF2 with the `uf2conv` command.
 +
-[source,sh]
+[,sh]
 ----
 uf2conv soft-blink-onboard.bin --base 0x26000 --family 0xADA52840 --output soft-blink-onboard.uf2
 ----
 
 . To flash the UF2 file on the Adafruit Circuit Bluefruit, simply copy it over.
 +
-[source,sh]
+[,sh]
 ----
 cp soft-blink-onboard.uf2 /run/media/$USER/CPLAYBOOT
 ----
@@ -116,35 +116,35 @@ For instructions on connecting to the physical SWD interface on the Circuit Play
 
 . Install the required packages for {cargo-embed}.
 +
-[source,sh]
+[,sh]
 ----
 sudo dnf -y install libusbx-devel systemd-devel
 ----
 
 . Install the `cargo-embed` utility.
 +
-[source,sh]
+[,sh]
 ----
 cargo install cargo-embed
 ----
 
 . Install the required Udev rules.
 +
-[source,sh]
+[,sh]
 ----
 wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
 ----
 
 . Load the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm control --reload
 ----
 
 . Apply the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm trigger
 ----
@@ -153,7 +153,7 @@ sudo udevadm trigger
 
 . Now use cargo-embed to flash an example.
 +
-[source,sh]
+[,sh]
 ----
 cargo embed --example soft-blink-onboard
 ----

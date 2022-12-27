@@ -44,14 +44,14 @@ Examples of lighting effects for the {SiPEED-Longan-Nano} v1.0.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/neopixel-soft-blink.git
 ----
 
 . Change to the project's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx/boards/longan-nano
 ----
@@ -60,21 +60,21 @@ cd smart-leds-fx/boards/longan-nano
 
 .. Clone the {RISC-V-GNU-Compiler-Toolchain} repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/riscv-collab/riscv-gnu-toolchain.git
 ----
 
 .. Change to the project directory.
 +
-[source,sh]
+[,sh]
 ----
 cd riscv-gnu-toolchain
 ----
 
 .. Install the dependencies required to build the toolchain.
 +
-[source,sh]
+[,sh]
 ----
 sudo dnf -y install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel gawk bison flex texinfo patchutils gcc gcc-c++ zlib-devel expat-devel
 ----
@@ -82,28 +82,28 @@ sudo dnf -y install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel 
 .. Configure.
 Here, the `--prefix` option installs everything under the `~/.local` directory.
 +
-[source,sh]
+[,sh]
 ----
 ./configure --prefix=$HOME/.local/riscv
 ----
 
 .. Build.
 +
-[source,sh]
+[,sh]
 ----
 make
 ----
 
 . Add the installation `bin` directory to your `PATH`.
 +
-[source,sh]
+[,sh]
 ----
 fish_add_path ~/.local/riscv/bin
 ----
 
 . Install the Rust toolchain for the {GD32VF103CBT6} microcontroller, which uses _RV32IMAC_.
 +
-[source,sh]
+[,sh]
 ----
 rustup target add riscv32imac-unknown-none-elf
 ----
@@ -115,21 +115,21 @@ The latter two can also be used for debugging.
 
 The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
 
-[source,sh]
+[,sh]
 ----
 sudo dnf -y install dfu-util
 ----
 
 . Build the example.
 +
-[source,sh]
+[,sh]
 ----
 cargo build --example rgbw-neopixel-stick-soft-blink
 ----
 
 . Create a binary from the example's ELF file.
 +
-[source,sh]
+[,sh]
 ----
 riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
 ----
@@ -140,7 +140,7 @@ riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/
 
 . Now flash the `.bin` file onto the Longan Nano using the `dfu-util` program.
 +
-[source,sh]
+[,sh]
 ----
 sudo dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
 ----
@@ -155,35 +155,35 @@ With a debugger attached, just use {cargo-embed} to flash the desired example to
 
 . Install necessary system packages.
 +
-[source,sh]
+[,sh]
 ----
 sudo dnf -y install libftdi-devel libusbx-devel systemd-devel
 ----
 
 . Install the `cargo-embed` crate.
 +
-[source,sh]
+[,sh]
 ----
 cargo install cargo-embed --features ftdi
 ----
 
 . Install the required {udev} rules.
 +
-[source,sh]
+[,sh]
 ----
 wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
 ----
 
 . Load the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm control --reload
 ----
 
 . Apply the new rules.
 +
-[source,sh]
+[,sh]
 ----
 sudo udevadm trigger
 ----
@@ -192,7 +192,7 @@ sudo udevadm trigger
 
 ==== DFU-Util
 
-[source,sh]
+[,sh]
 ----
 lsusb
 Bus 001 Device 004: ID 27c6:533c Shenzhen Goodix Technology Co.,Ltd. FingerPrint
@@ -207,12 +207,12 @@ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="27c6", ATTR{idPro
 
 . Build the example.
 +
-[source,sh]
+[,sh]
 ----
 cargo build --example rgbw-neopixel-stick-soft-blink
 ----
 
-[source,sh]
+[,sh]
 ----
 riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
 ----
@@ -221,7 +221,7 @@ riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/
 
 . Send the payload.
 +
-[source,sh]
+[,sh]
 ----
 dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
 ----
@@ -234,7 +234,7 @@ Note that this isn't working yet.
 
 . Pass the desired example to the `cargo embed` subcommand.
 +
-[source,sh]
+[,sh]
 ----
 cargo embed --example rgbw-neopixel-stick-soft-blink
 ----
@@ -249,7 +249,7 @@ Flashing and debugging can be done using {OpenOCD} and {GDB} with debug probe su
 +
 SiPEED RISC-V Debugger:: Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
 +
-[source,sh]
+[,sh]
 ----
 openocd -f sipeed-jtag.cfg -f target/gd32vf103.cfg
 ----
@@ -258,7 +258,7 @@ RV-LINK:: todo I haven't test this myself yet, but instructions for using the {R
 
 . Now, launch GDB using the `cargo run` subcommand and the desired example.
 +
-[source,sh]
+[,sh]
 ----
 cargo run --example rgbw-neopixel-stick-soft-blink
 ----

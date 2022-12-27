@@ -37,35 +37,35 @@ Examples for several boards cna be found in the link:boards[boards] directory.
 
 . First, clone the repository.
 +
-[source,sh]
+[,sh]
 ----
 git clone https://github.com/jwillikers/smart-leds-fx.git
 ----
 
 . Change to the project's directory.
 +
-[source,sh]
+[,sh]
 ----
 cd smart-leds-fx
 ----
 
 . Install {rustup} and {Rust}.
 +
-[source,sh]
+[,sh]
 ----
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ----
 
 . Add Cargo's directory to your `PATH`.
 +
-[source,sh]
+[,sh]
 ----
 fish_add_path ~/.cargo/bin
 ----
 
 . Install the Rust toolchain for the GD32 microcontroller, a RISC-V IMAC.
 +
-[source,sh]
+[,sh]
 ----
 rustup target add riscv32imac-unknown-none-elf
 ----
