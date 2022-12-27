@@ -9,21 +9,18 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:Adafruit-NeoPixel-Digital-RGBW-LED-Strip-White-PCB-30-LED: https://www.adafruit.com/product/2832?length=5[Adafruit NeoPixel Digital RGBW LED Strip - White PCB 30 LED/m]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
 :elf2uf2-rs: https://github.com/JoNil/elf2uf2-rs[elf2uf2-rs]
-:fish: https://fishshell.com/[fish]
 :flip-link: https://github.com/knurling-rs/flip-link[flip-link]
 :Git: https://git-scm.com/[Git]
-:Linux: https://www.linuxfoundation.org/[Linux]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:Phototransistor: https://www.adafruit.com/product/2831[Phototransistor]
 :probe-rs: https://probe.rs/[probe-rs]
 :probe-run: https://github.com/knurling-rs/probe-run[probe-run]
-:Python: https://www.python.org/[Python]
 :Raspberry-Pi-Pico: https://www.raspberrypi.org/products/raspberry-pi-pico/[Raspberry Pi Pico]
 :RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
 :rp-hal: https://github.com/rp-rs/rp-hal[rp-hal]
-:Rouge: https://rouge.jneen.net/[Rouge]
-:Ruby: https://www.ruby-lang.org/en/[Ruby]
 :Rust: https://www.rust-lang.org/[Rust]
 :rustup: https://rustup.rs/[rustup]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
@@ -137,6 +134,11 @@ wget -LP /run/media/$USER/RPI-RP2/ https://github.com/majbthrd/DapperMime/releas
 == Examples
 
 rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} containing 8 RGBW {NeoPixel}s using the SPI MOSI pin, pin GPIO7, of the Raspberry Pi Pico.
+rgbw-neopixel-strand-candy-cane:: A static pattern which alternates red and white along an {Adafruit-NeoPixel-Digital-RGBW-LED-Strip-White-PCB-30-LED} containing 150 RGBW {NeoPixel}s using the SPI MOSI pin, pin GPIO7, of the Raspberry Pi Pico.
+An analog pin, GPIO 27, is connected to a {Phototransistor} which is connected to ground via a 1 kΩ resistor.
+This is used to turn the LED's off when in daylight.
+The lights come on for the night at dusk and during dark cloudy weather.
+A moving average is used filter out noise.
 
 == Todo
 
@@ -155,17 +157,12 @@ Several of these projects are enumerated below.
 * {Asciidoctor-link}
 * {cargo-embed}
 * {elf2uf2-rs}
-* {fish}
 * {flip-link}
 * {Git}
-* {Linux}
 * {atsamd-rs-atsamd}
 * {probe-rs}
 * {probe-run}
-* {Python}
-* {Rouge}
 * {rp-hal}
-* {Ruby}
 * {Rust}
 * {smart-leds}
 
@@ -182,7 +179,7 @@ Licensed under either of
 
 at your option.
 
-© 2021 Jordan Williams
+© 2021-2022 Jordan Williams
 
 == Authors
 
