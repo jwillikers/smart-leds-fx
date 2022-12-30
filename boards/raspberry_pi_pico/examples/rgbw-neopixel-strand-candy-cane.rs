@@ -31,7 +31,7 @@ use ws2812_spi::Ws2812;
 
 const SYS_HZ: u32 = 125_000_000_u32;
 
-const DARKNESS_THRESHOLD: u16 = 1300u16;
+const DARKNESS_THRESHOLD: u16 = 1400u16;
 
 #[entry]
 fn main() -> ! {
@@ -39,7 +39,7 @@ fn main() -> ! {
 
     const DELAY: u32 = 8u32;
     const SECOND_LED_COLOR: HsColor<u8> = RED;
-    const NUM_LEDS: usize = 300;
+    const NUM_LEDS: usize = 450;
     debug_assert_ne!(NUM_LEDS, 0);
 
     // Grab our singleton objects
@@ -125,7 +125,7 @@ fn main() -> ! {
 
     let mut adc = Adc::new(pac.ADC, &mut pac.RESETS);
     let mut adc_pin_2 = pins.gpio28.into_floating_input();
-    let mut ma: MovAvg<u16, u32, 100> = MovAvg::new();
+    let mut ma: MovAvg<u16, u32, 200> = MovAvg::new();
 
     loop {
         let light_reading: u16 = adc.read(&mut adc_pin_2).unwrap();
