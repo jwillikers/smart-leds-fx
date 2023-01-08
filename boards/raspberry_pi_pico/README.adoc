@@ -42,7 +42,7 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 +
 [,sh]
 ----
-cd smart-leds-fx/boards/raspberry-pi-pico
+cd smart-leds-fx/boards/raspberry_pi_pico
 ----
 
 . Install the {Rust} toolchain for the Raspberry Pi Pico.
@@ -52,11 +52,11 @@ cd smart-leds-fx/boards/raspberry-pi-pico
 rustup target add thumbv6m-none-eabi
 ----
 
-. Install `probe-run-rp` until support lands in upstream {probe-run}.
+. Install {probe-run}.
 +
 [,sh]
 ----
-cargo install --git https://github.com/rp-rs/probe-run --branch main
+cargo install probe-run
 ----
 
 . Install {flip-link}

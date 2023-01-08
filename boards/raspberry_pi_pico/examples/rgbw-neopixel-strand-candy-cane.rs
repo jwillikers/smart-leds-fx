@@ -31,13 +31,13 @@ use ws2812_spi::Ws2812;
 
 const SYS_HZ: u32 = 125_000_000_u32;
 
-const DARKNESS_THRESHOLD: u16 = 1400u16;
+const DARKNESS_THRESHOLD: u16 = 1200u16;
 
 #[entry]
 fn main() -> ! {
     info!("Program start");
 
-    const DELAY: u32 = 8u32;
+    const DELAY: u32 = 100u32;
     const SECOND_LED_COLOR: HsColor<u8> = RED;
     const NUM_LEDS: usize = 450;
     debug_assert_ne!(NUM_LEDS, 0);
@@ -111,8 +111,10 @@ fn main() -> ! {
     };
 
     let mut data = [first_rgbw; NUM_LEDS];
-    for led in data.iter_mut().skip(1).step_by(2) {
-        *led = second_rgbw.clone();
+    for slice in data.chunks_mut(9).step_by(2) {
+        for led in slice.iter_mut() {
+            *led = second_rgbw.clone();
+        }
     }
 
     let blank_rgbw: RGBW<u8> = RGBW {
@@ -129,14 +131,37 @@ fn main() -> ! {
 
     loop {
         let light_reading: u16 = adc.read(&mut adc_pin_2).unwrap();
-        debug!("Light reading: {}", light_reading);
+        // debug!("Light reading: {}", light_reading);
         ma.feed(light_reading);
-        debug!("Moving Average: {}", ma.get());
+        // debug!("Moving Average: {}", ma.get());
         if ma.get() <= DARKNESS_THRESHOLD {
-            ws.write(data.iter().cloned()).unwrap();
+            let mut index: usize = 0;
+            while index < NUM_LEDS / 4 {
+                for slice in data.chunks_mut(NUM_LEDS / 4) {
+                    let led = slice.get_mut(index);
+                    if let Some(led) = led {
+                        if *led == first_rgbw {
+                            *led = second_rgbw.clone();
+                        } else {
+                            *led = first_rgbw.clone();
+                        }
+                    }
+                }
+                ws.write(data.iter().cloned()).unwrap();
+                delay.delay_ms(DELAY);
+                index = index + 1;
+            }
+            // for led in data.iter_mut() {
+            //     if *led == second_rgbw {
+            //         *led = second_rgbw.clone();
+            //     } else {
+            //         *led = first_rgbw.clone();
+            //     }
+            //     ws.write(data.iter().cloned()).unwrap();
+            //     delay.delay_ms(DELAY);
+            // }
         } else {
             ws.write(blank_data.iter().cloned()).unwrap();
         }
-        delay.delay_ms(DELAY);
     }
 }
