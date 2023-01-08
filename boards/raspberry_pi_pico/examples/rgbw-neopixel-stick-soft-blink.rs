@@ -1,19 +1,24 @@
 #![no_std]
 #![no_main]
 
-use cortex_m_rt::entry;
+use bsp::entry;
 use defmt::*;
 use defmt::debug_assert_ne;
 use defmt_rtt as _;
 use embedded_hal::spi::MODE_0;
-use embedded_time::duration::Milliseconds;
-use embedded_time::fixed_point::FixedPoint;
-use embedded_time::rate::Extensions;
 use panic_probe as _;
-use pico::hal;
-use pico::hal::pac;
-use pico::hal::prelude::*;
-use pico::hal::{gpio::FunctionSpi, sio::Sio, spi::Spi};
+use fugit::RateExtU32;
+use rp_pico as bsp;
+use bsp::hal::{
+    adc::Adc,
+    clocks,
+    prelude::*,
+    gpio::FunctionSpi,
+    pac,
+    sio::Sio,
+    spi::Spi,
+    watchdog,
+};
 use smart_leds::{
     hsv::{hsv2rgb, Hsv},
     SmartLedsWrite, White, RGB, RGBW,
@@ -47,12 +52,12 @@ fn main() -> ! {
     let core = pac::CorePeripherals::take().unwrap();
 
     // Set up the watchdog driver - needed by the clock setup code
-    let mut watchdog = hal::watchdog::Watchdog::new(pac.WATCHDOG);
+    let mut watchdog = watchdog::Watchdog::new(pac.WATCHDOG);
 
     // Configure the clocks
     //
     // Our default is 12 MHz crystal input, 125 MHz system clock
-    let clocks = hal::clocks::init_clocks_and_plls(
+    let clocks = clocks::init_clocks_and_plls(
         pico::XOSC_CRYSTAL_FREQ,
         pac.XOSC,
         pac.CLOCKS,
