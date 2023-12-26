@@ -1,0 +1,20 @@
+{
+    "cSpell.words": [
+        "adoc",
+        "Asciidoctor",
+        "bootloader",
+        "BOOTSEL",
+        "eabi",
+        "GPIO",
+        "ifdef",
+        "leds",
+        "MOSI",
+        "neopixel",
+        "Pico",
+        "picoprobe",
+        "Picos",
+        "RGBW",
+        "rustup",
+        "thumbv"
+    ]
+}

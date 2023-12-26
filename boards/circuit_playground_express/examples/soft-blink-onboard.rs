@@ -1,4 +1,5 @@
 #![no_main]
+#![no_std]
 
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
@@ -6,13 +7,14 @@ use rtt_target::rtt_init_default;
 use bsp::entry;
 use bsp::hal;
 use circuit_playground_express as bsp;
-use hal::blocking::delay::DelayMs;
+use hal::clock::GenericClockController;
 use hal::delay::Delay;
 use hal::pac::{CorePeripherals, Peripherals};
+use hal::prelude::*;
 use hal::time::U32Ext;
-use hal::timer::CountDown;
 use hal::timer::TimerCounter;
 
+use embedded_hal::blocking::delay::DelayMs;
 use embedded_time::duration::*;
 use smart_leds::{
     hsv::{hsv2rgb, Hsv},
@@ -43,7 +45,7 @@ fn main() -> ! {
         &mut peripherals.SYSCTRL,
         &mut peripherals.NVMCTRL,
     );
-    let pins = hal::Pins::new(peripherals.PORT);
+    let pins = bsp::Pins::new(peripherals.PORT);
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
     let gclk0 = clocks.gclk0();
@@ -51,7 +53,7 @@ fn main() -> ! {
     let mut timer = TimerCounter::tc3_(&timer_clock, peripherals.TC3, &mut peripherals.PM);
     timer.start(3.mhz());
 
-    let ws_data_pin: hal::NeoPixel = pins.d8.into();
+    let ws_data_pin: bsp::NeoPixel = pins.d8.into();
     let mut ws = Ws2812::new(timer, ws_data_pin);
 
     loop {

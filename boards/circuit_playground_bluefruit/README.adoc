@@ -80,7 +80,7 @@ rustup component add llvm-tools-preview
 +
 [,sh]
 ----
-cargo install cargo-objcopy uf2conv
+cargo install cargo-binutils uf2conv
 ----
 
 . Attach the Circuit Playground Bluefruit to your computer using the micro USB port.
