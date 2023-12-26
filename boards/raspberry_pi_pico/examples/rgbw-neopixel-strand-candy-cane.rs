@@ -12,10 +12,10 @@ use panic_probe as _;
 use rp_pico as bsp;
 
 use bsp::hal::{
-    adc::Adc,
+    adc::{Adc, AdcPin},
     clocks,
     prelude::*,
-    gpio::FunctionSpi,
+    gpio,
     pac,
     sio::Sio,
     spi::Spi,
@@ -80,10 +80,10 @@ fn main() -> ! {
         cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
 
     // These are implicitly used by the spi driver if they are in the correct mode
-    let _spi_sclk = pins.gpio6.into_mode::<FunctionSpi>();
-    let _spi_mosi = pins.gpio7.into_mode::<FunctionSpi>();
-    let _spi_miso = pins.gpio4.into_mode::<FunctionSpi>();
-    let spi = Spi::<_, _, 8>::new(pac.SPI0).init(
+    let spi_sclk: gpio::Pin<_, gpio::FunctionSpi, gpio::PullNone> = pins.gpio6.reconfigure();
+    let spi_mosi: gpio::Pin<_, gpio::FunctionSpi, gpio::PullNone> = pins.gpio7.reconfigure();
+    let spi_miso: gpio::Pin<_, gpio::FunctionSpi, gpio::PullUp> = pins.gpio4.reconfigure();
+    let spi = Spi::<_, _, _, 8>::new(pac.SPI0, (spi_mosi, spi_miso, spi_sclk)).init(
         &mut pac.RESETS,
         SYS_HZ.Hz(),
         3_000_000u32.Hz(),
@@ -126,7 +126,7 @@ fn main() -> ! {
     let blank_data = [blank_rgbw; NUM_LEDS];
 
     let mut adc = Adc::new(pac.ADC, &mut pac.RESETS);
-    let mut adc_pin_2 = pins.gpio28.into_floating_input();
+    let mut adc_pin_2 = AdcPin::new(pins.gpio28.into_floating_input());
     let mut ma: MovAvg<u16, u32, 200> = MovAvg::new();
 
     loop {
