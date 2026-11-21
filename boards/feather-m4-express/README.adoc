@@ -20,6 +20,7 @@ endif::[]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :probe-rs: https://probe.rs/[probe-rs]
 :Python: https://www.python.org/[Python]
@@ -45,41 +46,24 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 +
 [,sh]
 ----
-cd smart-leds-fx/boards/feather_m4_express
+cd smart-leds-fx/boards/feather-m4-express
 ----
 
-. Install the Rust toolchain for the Feather M4 Express.
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
 +
 [,sh]
 ----
-rustup target add thumbv7em-none-eabihf
+direnv allow
 ----
-
-. Install the following Udev rules to allow access to various Adafruit boards without requiring superuser privileges.
 +
-./etc/udev/rules.d/99-adafruit-boards.rules
-[source,udev]
-----
-ATTRS{idVendor}=="239a", ENV{ID_MM_DEVICE_IGNORE}="1"
-SUBSYSTEM=="usb", ATTRS{idVendor}=="239a", MODE="0666"
-SUBSYSTEM=="tty", ATTRS{idVendor}=="239a", MODE="0666"
-----
-
-. Unplug your Feather M4 Express and plug it back in for the Udev rules to take effect.
-
-== Program
-
-The Feather M4 Express can be programmed directly over the USB using the UF2 bootloader or via the SWD connections available exposed on the bottom of the board.
-
-=== UF2
-
-{cargo-hf2} makes it easy to convert and install programs to the board using the on-board UF2 bootloader.
-
-. Install the {cargo-hf2} utility.
+Alternatively, enter the environment with `nix develop`.
 +
 [,sh]
 ----
-cargo install cargo-hf2
+nix develop ../..#feather-m4-express
 ----
 
 . Attach the Feather M4 Express to your computer using the micro USB port.
@@ -94,20 +78,6 @@ cargo hf2 --example soft-blink-onboard --release
 ----
 
 === SWD
-
-. Install required packages for {cargo-embed}.
-+
-[,sh]
-----
-sudo dnf -y install libusbx-devel systemd-devel
-----
-
-. Install the `cargo-embed` utility.
-+
-[,sh]
-----
-cargo install cargo-embed
-----
 
 . Install the required Udev rules.
 +
@@ -191,9 +161,8 @@ Licensed under either of
 
 at your option.
 
-© 2021 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
 mailto:{email}[{author}]
-

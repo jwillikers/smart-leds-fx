@@ -1,22 +1,23 @@
 #![no_std]
 #![no_main]
 
-use feather_m4::entry;
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
 
-use embedded_time::duration::*;
-use feather_m4 as hal;
-use feather_m4::hal::common::thumbv7em::clock::GenericClockController;
-use feather_m4::hal::delay::Delay;
-use feather_m4::hal::hal::blocking::delay::DelayMs;
-use feather_m4::hal::hal::timer::CountDown;
-use feather_m4::hal::pac::{CorePeripherals, Peripherals};
-use feather_m4::hal::thumbv7em::timer::TimerCounter;
-use feather_m4::hal::time::U32Ext;
+use bsp::entry;
+use bsp::hal;
+use feather_m4 as bsp;
+use hal::clock::GenericClockController;
+use hal::delay::Delay;
+use hal::ehal::delay::DelayNs;
+use hal::pac::{CorePeripherals, Peripherals};
+use hal::time::Hertz;
+use hal::timer::TimerCounter;
+use hal::timer_traits::InterruptDrivenTimer;
+
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, RGB,
+    RGB, SmartLedsWrite,
+    hsv::{Hsv, hsv2rgb},
 };
 use ws2812_timer_delay::Ws2812;
 
@@ -28,7 +29,7 @@ use smart_leds_fx::iterators::BrightnessRange;
 fn main() -> ! {
     rtt_init_default!();
 
-    const DELAY: Milliseconds<u32> = Milliseconds::<u32>(8);
+    const DELAY_MS: u32 = 8;
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
     const NUM_LEDS: usize = 1;
     debug_assert_ne!(NUM_LEDS, 0);
@@ -38,19 +39,19 @@ fn main() -> ! {
     let mut peripherals = Peripherals::take().unwrap();
     let core = CorePeripherals::take().unwrap();
     let mut clocks = GenericClockController::with_internal_32kosc(
-        peripherals.GCLK,
-        &mut peripherals.MCLK,
-        &mut peripherals.OSC32KCTRL,
-        &mut peripherals.OSCCTRL,
-        &mut peripherals.NVMCTRL,
+        peripherals.gclk,
+        &mut peripherals.mclk,
+        &mut peripherals.osc32kctrl,
+        &mut peripherals.oscctrl,
+        &mut peripherals.nvmctrl,
     );
-    let pins = hal::Pins::new(peripherals.PORT);
+    let pins = bsp::Pins::new(peripherals.port);
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
     let gclk0 = clocks.gclk0();
     let timer_clock = clocks.tc2_tc3(&gclk0).unwrap();
-    let mut timer = TimerCounter::tc3_(&timer_clock, peripherals.TC3, &mut peripherals.MCLK);
-    timer.start(3.mhz());
+    let mut timer = TimerCounter::tc3_(&timer_clock, peripherals.tc3, &mut peripherals.mclk);
+    timer.start(Hertz::MHz(3).into_duration());
 
     let neopixel = pins.neopixel.into_push_pull_output();
     let mut ws = Ws2812::new(timer, neopixel);
@@ -64,7 +65,7 @@ fn main() -> ! {
             });
             let data = [rgb; NUM_LEDS];
             ws.write(data.iter().cloned()).unwrap();
-            delay.delay_ms(DELAY.integer());
+            delay.delay_ms(DELAY_MS);
         }
     }
 }

@@ -1,0 +1,50 @@
+[package]
+name = "smart-leds-fx-feather-m4-express"
+version = "0.1.0"
+authors = ["Jordan Williams <jordan@jwillikers.com>"]
+description = "Examples of lighting effects for Adafruit's Feather M4 Express"
+keywords = [
+  "dotstar",
+  "embedded",
+  "fx",
+  "feather",
+  "led",
+  "m4",
+  "neopixel",
+  "no-std",
+  "smart-leds",
+  "ws2812",
+]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+readme = "README.adoc"
+repository = "https://github.com/jwillikers/smart-leds-fx"
+
+[dependencies]
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
+panic-rtt-target = "0.2"
+rtt-target = "0.6"
+smart-leds = "0.4"
+# The latest release of ws2812-timer-delay, 0.3.0, only supports smart-leds 0.3.
+# Support for smart-leds 0.4 has been merged, but it hasn't been released yet.
+# Switch back to a release from crates.io once a newer version is published.
+ws2812-timer-delay = { git = "https://github.com/smart-leds-rs/ws2812-timer-delay-rs", rev = "01f9269" }
+
+[dependencies.feather_m4]
+features = ["rt"]
+version = "0.18"
+
+[dependencies.smart-leds-fx]
+path = "../../smart-leds-fx"
+version = "0.1.0"
+
+[profile.dev]
+incremental = false
+codegen-units = 1
+debug = true
+lto = true
+
+[profile.release]
+debug = true
+lto = true
+opt-level = "s"
