@@ -11,13 +11,32 @@ use embedded_hal::spi;
 use embedded_time::duration::Milliseconds;
 use embedded_time::fixed_point::FixedPoint;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, RGB, RGB8,
+    RGB8, SmartLedsWrite,
+    hsv::{Hsv, hsv2rgb},
 };
 use smart_leds_fx::colors::HsColor;
 use smart_leds_fx::colors::RESTFUL_ORANGE;
 use smart_leds_fx::iterators::BrightnessRange;
 use ws2812_spi::Ws2812;
+
+// pub struct RbgToGrb<I> {
+//     iter: I,
+// }
+//
+// impl<'a, I> Iterator for BrgToGrb<I>
+// where
+//     I: Iterator<Item = RGB8>,
+// {
+//     type Item = RGB8;
+//
+//     fn next(&mut self) -> Option<RGB8> {
+//         self.iter.next().map(|a| RGB8 {
+//             r: a.g,
+//             g: a.r,
+//             b: a.b,
+//         })
+//     }
+// }
 
 #[entry]
 fn main() -> ! {
@@ -25,7 +44,7 @@ fn main() -> ! {
 
     const DELAY: Milliseconds<u32> = Milliseconds::<u32>(8);
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
-    const NUM_LEDS: usize = 30;
+    const NUM_LEDS: usize = 44;
     debug_assert_ne!(NUM_LEDS, 0);
 
     let brightness_range = BrightnessRange::new(1, 254, 1);
@@ -50,7 +69,7 @@ fn main() -> ! {
         (sck, miso, mosi),
         &mut afio,
         spi::MODE_0,
-        3_000_000.hz(),
+        3_800_000.hz(),
         &mut rcu,
     );
 
@@ -65,7 +84,12 @@ fn main() -> ! {
             });
             let data = [rgb; NUM_LEDS];
             // Account for the fact the Triple Ring uses GRB ordering... even though it shouldn't.
-            ws.write(data.iter().cloned()).unwrap();
+            ws.write(data.iter().cloned().map(|a| RGB8 {
+                r: a.g,
+                g: a.r,
+                b: a.b,
+            }))
+            .unwrap();
             delay.delay_ms(DELAY.integer());
         }
     }

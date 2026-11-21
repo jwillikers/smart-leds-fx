@@ -2,8 +2,8 @@
 #![no_main]
 
 use panic_halt as _;
-use rtt_target::rtt_init_default;
 use riscv_rt::entry;
+use rtt_target::rtt_init_default;
 
 use longan_nano::hal::{delay::McycleDelay, pac, prelude::*, spi::Spi};
 
@@ -11,8 +11,8 @@ use embedded_hal::spi;
 use embedded_time::duration::Milliseconds;
 use embedded_time::fixed_point::FixedPoint;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, White, RGB, RGBW,
+    RGB, RGBW, SmartLedsWrite, White,
+    hsv::{Hsv, hsv2rgb},
 };
 use smart_leds_fx::colors::HsColor;
 use smart_leds_fx::colors::RESTFUL_ORANGE;

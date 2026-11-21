@@ -11,11 +11,11 @@ use embedded_hal::spi;
 use embedded_time::duration::Milliseconds;
 use embedded_time::fixed_point::FixedPoint;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, White, RGB, RGBW,
+    RGB, RGBW, SmartLedsWrite, White,
+    hsv::{Hsv, hsv2rgb},
 };
-use smart_leds_fx::colors::{HsColor, CHRISTMAS_GREEN};
-use smart_leds_fx::colors::{RED, WHITE};
+use smart_leds_fx::colors::RED;
+use smart_leds_fx::colors::{CHRISTMAS_GREEN, HsColor};
 use smart_leds_fx::iterators::BrightnessRange;
 use ws2812_spi::Ws2812;
 
@@ -83,7 +83,7 @@ fn main() -> ! {
             };
             let mut data = [first_rgbw; NUM_LEDS];
             for led in data.iter_mut().skip(1).step_by(2) {
-                *led = second_rgbw.clone();
+                *led = second_rgbw;
             }
             ws.write(data.iter().cloned()).unwrap();
             delay.delay_ms(DELAY.integer());

@@ -19,6 +19,7 @@ endif::[]
 :GDB: https://www.gnu.org/software/gdb/[GDB]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :NeoPixel-Triple-Ring-Board: https://www.adafruit.com/product/4222[NeoPixel Triple-Ring Board]
@@ -56,7 +57,25 @@ git clone https://github.com/jwillikers/neopixel-soft-blink.git
 cd smart-leds-fx/boards/longan-nano
 ----
 
-. Build the latest {RISC-V-GNU-Compiler-Toolchain}.
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
++
+[,sh]
+----
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#longan-nano
+----
+
+. To debug with GDB and <<OpenOCD>>, build the latest {RISC-V-GNU-Compiler-Toolchain}.
+This isn't necessary to build and flash the examples.
 
 .. Clone the {RISC-V-GNU-Compiler-Toolchain} repository.
 +
@@ -101,24 +120,21 @@ make
 fish_add_path ~/.local/riscv/bin
 ----
 
-. Install the Rust toolchain for the {GD32VF103CBT6} microcontroller, which uses _RV32IMAC_.
-+
-[,sh]
-----
-rustup target add riscv32imac-unknown-none-elf
-----
-
 Instructions are provided for using <<dfu-util>>, <<cargo-embed>>, and <<OpenOCD>> to flash an example to the Longan Nano.
 The latter two can also be used for debugging.
 
 == dfu-util
 
 The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
+The `longan-nano-flash` Nix flake app builds and flashes an example with dfu-util in one step.
+Put the Longan Nano in bootloader mode as described below and then run the app with the name of the example.
 
 [,sh]
 ----
-sudo dnf -y install dfu-util
+nix run ../..#longan-nano-flash -- rgbw-neopixel-stick-soft-blink
 ----
+
+The individual steps to do this manually are described here.
 
 . Build the example.
 +
@@ -131,7 +147,7 @@ cargo build --example rgbw-neopixel-stick-soft-blink
 +
 [,sh]
 ----
-riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
+rust-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
 ----
 
 . Attach the Longan Nano's USB-C port to your computer.
@@ -158,13 +174,6 @@ With a debugger attached, just use {cargo-embed} to flash the desired example to
 [,sh]
 ----
 sudo dnf -y install libftdi-devel libusbx-devel systemd-devel
-----
-
-. Install the `cargo-embed` crate.
-+
-[,sh]
-----
-cargo install cargo-embed --features ftdi
 ----
 
 . Install the required {udev} rules.
@@ -214,7 +223,7 @@ cargo build --example rgbw-neopixel-stick-soft-blink
 
 [,sh]
 ----
-riscv64-unknown-elf-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
+rust-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
 ----
 
 . Enter bootloader mode.
@@ -310,7 +319,7 @@ Refer to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
 
 This repository is licensed under the https://www.gnu.org/licenses/gpl-3.0.html[GPLv3], a copy of which is provided in the link:LICENSE.adoc[license file].
 
-© 2021 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
