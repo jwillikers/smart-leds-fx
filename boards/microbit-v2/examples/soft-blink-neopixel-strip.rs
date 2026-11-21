@@ -5,19 +5,19 @@ use cortex_m_rt::entry;
 use panic_rtt_target as _;
 use rtt_target::rtt_init_default;
 
+use embedded_hal::delay::DelayNs;
 use microbit::{
-    hal::{
-        gpio::{p0::Parts, Level},
-        prelude::*,
-        spi, Timer,
-    },
     Peripherals,
+    hal::{
+        Timer,
+        gpio::{Level, p0::Parts},
+        spi,
+    },
 };
 
-use embedded_time::duration::*;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, RGB,
+    RGB, SmartLedsWrite,
+    hsv::{Hsv, hsv2rgb},
 };
 use ws2812_spi::Ws2812;
 
@@ -29,7 +29,7 @@ use smart_leds_fx::iterators::BrightnessRange;
 fn main() -> ! {
     rtt_init_default!();
 
-    const DELAY: Milliseconds<u32> = Milliseconds::<u32>(8);
+    const DELAY_MS: u32 = 8;
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
     const NUM_LEDS: usize = 30;
     debug_assert_ne!(NUM_LEDS, 0);
@@ -43,11 +43,11 @@ fn main() -> ! {
     let mosi = port0.p0_13.into_push_pull_output(Level::Low).degrade();
     let miso = port0.p0_01.into_floating_input().degrade();
     let pins = spi::Pins {
-        sck,
+        sck: Some(sck),
         miso: Some(miso),
         mosi: Some(mosi),
     };
-    let spi = spi::Spi::new(dp.SPI0, pins, spi::Frequency::M2, spi::MODE_0);
+    let spi = spi::Spi::new(dp.SPI0, pins, spi::Frequency::M2, embedded_hal::spi::MODE_0);
 
     let mut ws = Ws2812::new(spi);
 
@@ -60,7 +60,7 @@ fn main() -> ! {
             });
             let data = [rgb; NUM_LEDS];
             ws.write(data.iter().cloned()).unwrap();
-            delay.delay_ms(DELAY.integer());
+            delay.delay_ms(DELAY_MS);
         }
     }
 }

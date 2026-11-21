@@ -14,6 +14,7 @@ endif::[]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :BBC-microbit: https://microbit.org/[micro:bit]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
 :nrf-rs-microbit: https://github.com/nrf-rs/microbit/[nrf-rs/microbit]
@@ -47,25 +48,21 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 cd smart-leds-fx/boards/microbit-v2
 ----
 
-. Install the Rust toolchain for the micro:bit v2.
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
 +
 [,sh]
 ----
-rustup target add thumbv7em-none-eabihf
+direnv allow
 ----
-
-. Install required packages for {cargo-embed}.
++
+Alternatively, enter the environment with `nix develop`.
 +
 [,sh]
 ----
-sudo dnf -y install libusbx-devel systemd-devel
-----
-
-. Install the `cargo-embed` utility.
-+
-[,sh]
-----
-cargo install cargo-embed
+nix develop ../..#microbit-v2
 ----
 
 . Install the required Udev rules.
@@ -143,9 +140,8 @@ Licensed under either of
 
 at your option.
 
-© 2021 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
 mailto:{email}[{author}]
-
