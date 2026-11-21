@@ -94,6 +94,14 @@ sudo udevadm trigger
 ----
 cargo embed --example soft-blink-neopixel-strip
 ----
++
+Alternatively, flash an optimized build of an example with {probe-rs} with the `nix run` command and the `microbit-v2-flash` app.
+The name of the example can be given as an argument.
++
+[,sh]
+----
+nix run ../..#microbit-v2-flash -- soft-blink-neopixel-strip
+----
 
 == Examples
 

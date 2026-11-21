@@ -78,10 +78,18 @@ The Circuit Playground Express can be programmed directly over the USB using the
 . Double click the reset button to put the board to put in bootloader mode.
 
 . Flash the board using the `hf2` Cargo subcommand.
+The NeoPixel timing only works with an optimized build, so use the `--release` flag.
 +
 [,sh]
 ----
-cargo hf2 --example soft-blink-onboard
+cargo hf2 --example soft-blink-onboard --release
+----
++
+Alternatively, use the `flash` recipe in the board's justfile.
++
+[,sh]
+----
+just flash soft-blink-onboard
 ----
 
 === SWD
@@ -116,6 +124,14 @@ sudo udevadm trigger
 [,sh]
 ----
 cargo embed --example soft-blink-onboard
+----
++
+Alternatively, flash an optimized build of an example with {probe-rs} with the `nix run` command and the `circuit-playground-express-flash` app.
+The name of the example can be given as an argument.
++
+[,sh]
+----
+nix run ../..#circuit-playground-express-flash -- soft-blink-onboard
 ----
 
 == Examples

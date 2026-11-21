@@ -94,6 +94,7 @@ The onboard NeoPixels should flash red and then remain green.
 The Circuit Playground Bluefruit should appear on your computer as an attached USB device named `CPLAYBOOT` when it is in bootloader mode.
 
 . Now build a binary, `.bin`, executable for your chosen example using cargo-objcopy.
+The Nix package for the board, built with `nix build ../..#circuit-playground-bluefruit`, also contains a `.bin` file for each example in `result/bin`.
 +
 [,sh]
 ----
@@ -147,10 +148,19 @@ sudo udevadm trigger
 ----
 cargo embed --example soft-blink-onboard
 ----
++
+Alternatively, flash an optimized build of an example with {probe-rs} with the `nix run` command and the `circuit-playground-bluefruit-flash` app.
+The name of the example can be given as an argument.
++
+[,sh]
+----
+nix run ../..#circuit-playground-bluefruit-flash -- soft-blink-onboard
+----
 
 == Examples
 
 soft-blink-onboard:: A _{soft-blink}_ effect for the ten on-board {NeoPixel} LED's.
+The NeoPixels are attached to pin P0.13, which is driven by the MOSI line of the SPI peripheral.
 
 == Todo
 
