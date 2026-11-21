@@ -90,7 +90,7 @@ rgbw-neopixel-strand-high-low-soft-blink:: A _{soft-blink}_ effect for an RGBW N
 Each LED alternates in color and the rise and fall of the soft blink effect.
 
 rgbw-neopixel-strand-white:: A simple example for setting an RGBW NeoPixel Strand with 240 RGBW {NeoPixel}s using the SPI MOSI pin GPIO7 on the ESP32-C3-DevKitC-02.
-Each LED alternates in color and the rise and fall of the soft blink effect.
+Every LED is set to a constant brightness using only the white channel.
 
 == Todo
 

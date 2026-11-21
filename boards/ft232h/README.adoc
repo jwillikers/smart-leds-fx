@@ -78,6 +78,14 @@ sudo dnf -y install libftdi-devel
 ----
 cargo run --example soft-blink-neopixel-strip
 ----
++
+Alternatively, run an optimized build of an example with the `nix run` command and the `ft232h-flash` app.
+The FT232H is controlled from the computer, so nothing is actually flashed.
++
+[,sh]
+----
+nix run ../..#ft232h-flash -- soft-blink-neopixel-strip
+----
 
 == Examples
 

@@ -169,13 +169,6 @@ With a debugger attached, just use {cargo-embed} to flash the desired example to
 
 === Install
 
-. Install necessary system packages.
-+
-[,sh]
-----
-sudo dnf -y install libftdi-devel libusbx-devel systemd-devel
-----
-
 . Install the required {udev} rules.
 +
 [,sh]

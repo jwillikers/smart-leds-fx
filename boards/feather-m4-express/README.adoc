@@ -76,6 +76,13 @@ nix develop ../..#feather-m4-express
 ----
 cargo hf2 --example soft-blink-onboard --release
 ----
++
+Alternatively, use the `flash` recipe in the board's justfile.
++
+[,sh]
+----
+just flash soft-blink-onboard
+----
 
 === SWD
 
@@ -107,6 +114,14 @@ sudo udevadm trigger
 [,sh]
 ----
 cargo embed --example soft-blink-onboard
+----
++
+Alternatively, flash an optimized build of an example with {probe-rs} with the `nix run` command and the `feather-m4-express-flash` app.
+The name of the example can be given as an argument.
++
+[,sh]
+----
+nix run ../..#feather-m4-express-flash -- soft-blink-onboard
 ----
 
 == Examples
