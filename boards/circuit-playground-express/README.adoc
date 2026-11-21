@@ -19,6 +19,7 @@ endif::[]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
 :probe-rs: https://probe.rs/[probe-rs]
 :Python: https://www.python.org/[Python]
@@ -47,11 +48,21 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 cd smart-leds-fx/boards/circuit-playground-express
 ----
 
-. Install the Rust toolchain for the Circuit Playground Express.
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
 +
 [,sh]
 ----
-rustup target add thumbv6m-none-eabi
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#circuit-playground-express
 ----
 
 == Program
@@ -61,13 +72,6 @@ The Circuit Playground Express can be programmed directly over the USB using the
 === UF2
 
 {cargo-hf2} makes it easy to convert and install programs to the board using the on-board UF2 bootloader.
-
-. Install the {cargo-hf2} utility.
-+
-[,sh]
-----
-cargo install cargo-hf2
-----
 
 . Attach the Circuit Playground Express to your computer using the micro USB port.
 
@@ -83,20 +87,6 @@ cargo hf2 --example soft-blink-onboard
 === SWD
 
 For instructions on connecting to the physical SWD interface on the Circuit Playground Express, see the article {Circuit-Playground-Express-M0-Wiring}.
-
-. Install required packages for {cargo-embed}.
-+
-[,sh]
-----
-sudo dnf -y install libusbx-devel systemd-devel
-----
-
-. Install the `cargo-embed` utility.
-+
-[,sh]
-----
-cargo install cargo-embed
-----
 
 . Install the required Udev rules.
 +
@@ -173,9 +163,8 @@ Licensed under either of
 
 at your option.
 
-© 2021 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
 mailto:{email}[{author}]
-
