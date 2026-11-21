@@ -20,6 +20,7 @@ endif::[]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :nrf-hal: https://github.com/nrf-rs/nrf-hal[nrf-hal]
 :probe-rs: https://probe.rs/[probe-rs]
@@ -51,11 +52,21 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 cd smart-leds-fx/boards/circuit-playground-bluefruit
 ----
 
-. Install the Rust toolchain for the Circuit Playground Bluefruit.
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
 +
 [,sh]
 ----
-rustup target add thumbv7em-none-eabihf
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#circuit-playground-bluefruit
 ----
 
 == Program
@@ -69,18 +80,11 @@ At the moment, it is not possible to use {cargo-hf2} to automatically flash the 
 The {Adafruit-nRF52-Bootloader} lacks support for the required HID functionality.
 It is still possible to flash UF2 payloads via drag-n-drop, though it requires more steps.
 
-. Install the LLVM tools preview.
+. Install the {uf2conv-rs} utility.
 +
 [,sh]
 ----
-rustup component add llvm-tools-preview
-----
-
-. Install the {cargo-objcopy} and {uf2conv-rs} utilities.
-+
-[,sh]
-----
-cargo install cargo-binutils uf2conv
+cargo install uf2conv
 ----
 
 . Attach the Circuit Playground Bluefruit to your computer using the micro USB port.
@@ -113,20 +117,6 @@ cp soft-blink-onboard.uf2 /run/media/$USER/CPLAYBOOT
 === SWD
 
 For instructions on connecting to the physical SWD interface on the Circuit Playground Bluefruit, see the article {Circuit-Playground-Express-M0-Wiring}.
-
-. Install the required packages for {cargo-embed}.
-+
-[,sh]
-----
-sudo dnf -y install libusbx-devel systemd-devel
-----
-
-. Install the `cargo-embed` utility.
-+
-[,sh]
-----
-cargo install cargo-embed
-----
 
 . Install the required udev rules.
 +
@@ -205,7 +195,7 @@ Licensed under either of
 
 at your option.
 
-© 2021-2024 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
