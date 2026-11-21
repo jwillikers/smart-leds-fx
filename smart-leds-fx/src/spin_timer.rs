@@ -1,7 +1,7 @@
 // From the atsamd-rs HAL project: https://github.com/atsamd-rs/atsamd
 
-use embedded_hal::timer::{CountDown, Periodic};
 use cortex_m::asm::delay as cycle_delay;
+use embedded_hal::timer::{CountDown, Periodic};
 
 #[derive(Clone, Copy)]
 pub struct SpinTimer {
@@ -20,8 +20,8 @@ impl CountDown for SpinTimer {
     type Time = u32;
 
     fn start<T>(&mut self, cycles: T)
-        where
-            T: Into<Self::Time>,
+    where
+        T: Into<Self::Time>,
     {
         self.cycles = cycles.into();
     }

@@ -66,6 +66,6 @@ impl<T: PrimInt + Debug + SubAssign + AddAssign> Iterator for BrightnessRange<T>
             }
         }
 
-        return Some(self.value);
+        Some(self.value)
     }
 }

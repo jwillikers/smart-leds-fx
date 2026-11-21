@@ -2,24 +2,29 @@
 name = "smart-leds-fx"
 authors = ["Jordan Williams <jordan@jwillikers.com>"]
 description = "A library for lighting effects for smart LED's"
-edition = "2018"
-keywords = ["dotstar", "embedded", "fx", "led", "neopixel", "no-std", "smart-leds", "ws2812"]
+edition = "2021"
+keywords = [
+  "dotstar",
+  "embedded",
+  "fx",
+  "led",
+  "neopixel",
+  "no-std",
+  "smart-leds",
+  "ws2812",
+]
 license = "MIT OR Apache-2.0"
-readme = "README.adoc"
+readme = "../README.adoc"
 repository = "https://github.com/jwillikers/smart-leds-fx"
 version = "0.1.0"
 
 [dependencies]
-smart-leds = "0.3.0"
-
-[dependencies.ws2812-spi]
-version = "0.4.0"
+smart-leds = "0.4"
 
 [dependencies.num-traits]
 version = "0.2"
 default-features = false
 
-[profile]
 [profile.dev]
 codegen-units = 1
 debug = true
