@@ -2,74 +2,52 @@
 #![no_main]
 
 use esp_backtrace as _;
-use riscv_rt::entry;
-
-use esp32c3_hal::{
-    clock::ClockControl,
-    gpio::IO,
-    pac::Peripherals,
-    prelude::*,
-    spi::{Spi, SpiMode},
-    timer::TimerGroup,
-    Delay,
-    Rtc,
+use esp_hal::{
+    delay::Delay,
+    main,
+    spi::{
+        Mode,
+        master::{Config, Spi},
+    },
+    time::Rate,
 };
 
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, White, RGB, RGBW,
+    RGB, RGBW, SmartLedsWrite, White,
+    hsv::{Hsv, hsv2rgb},
 };
 use smart_leds_fx::colors::RED;
-use smart_leds_fx::colors::{HsColor, CHRISTMAS_GREEN};
+use smart_leds_fx::colors::{CHRISTMAS_GREEN, HsColor};
 use smart_leds_fx::iterators::BrightnessRange;
 use ws2812_spi::Ws2812;
 
-#[entry]
+// Required by the ESP-IDF bootloader.
+esp_bootloader_esp_idf::esp_app_desc!();
+
+#[main]
 fn main() -> ! {
-    const DELAY: u8 = 4;
+    const DELAY_MS: u32 = 4;
     const FIRST_LED_COLOR: HsColor<u8> = CHRISTMAS_GREEN;
     const SECOND_LED_COLOR: HsColor<u8> = RED;
     const NUM_LEDS: usize = 8;
 
     let brightness_range = BrightnessRange::new(1, 254, 1);
 
-    let peripherals = Peripherals::take().unwrap();
-    let mut system = peripherals.SYSTEM.split();
-    let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
-
-    // Disable the watchdog timers. For the ESP32-C3, this includes the Super WDT,
-    // the RTC WDT, and the TIMG WDTs.
-    let mut rtc = Rtc::new(peripherals.RTC_CNTL);
-    let timer_group0 = TimerGroup::new(peripherals.TIMG0, &clocks);
-    let mut wdt0 = timer_group0.wdt;
-    let timer_group1 = TimerGroup::new(peripherals.TIMG1, &clocks);
-    let mut wdt1 = timer_group1.wdt;
-
-    rtc.swd.disable();
-    rtc.rwdt.disable();
-    wdt0.disable();
-    wdt1.disable();
-
-    let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
-    let sclk = io.pins.gpio6;
-    let miso = io.pins.gpio2;
-    let mosi = io.pins.gpio7;
-    let cs = io.pins.gpio10;
+    let peripherals = esp_hal::init(esp_hal::Config::default());
 
     let spi = Spi::new(
         peripherals.SPI2,
-        sclk,
-        mosi,
-        miso,
-        cs,
-        3_333_333u32.Hz(),
-        // 100u32.kHz(),
-        SpiMode::Mode0,
-        &mut system.peripheral_clock_control,
-        &clocks,
-    );
+        Config::default()
+            .with_frequency(Rate::from_khz(3_333))
+            .with_mode(Mode::_0),
+    )
+    .unwrap()
+    .with_sck(peripherals.GPIO6)
+    .with_mosi(peripherals.GPIO7)
+    .with_miso(peripherals.GPIO2)
+    .with_cs(peripherals.GPIO10);
 
-    let mut delay = Delay::new(&clocks);
+    let delay = Delay::new();
 
     let mut ws = Ws2812::new_sk6812w(spi);
 
@@ -99,10 +77,10 @@ fn main() -> ! {
             };
             let mut data = [first_rgbw; NUM_LEDS];
             for led in data.iter_mut().skip(1).step_by(2) {
-                *led = second_rgbw.clone();
+                *led = second_rgbw;
             }
             ws.write(data.iter().cloned()).unwrap();
-            delay.delay_ms(DELAY);
+            delay.delay_millis(DELAY_MS);
         }
     }
 }

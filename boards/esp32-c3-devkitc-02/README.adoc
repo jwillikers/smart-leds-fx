@@ -12,11 +12,12 @@ endif::[]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
 :cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
 :ESP32-C3-DevKitC-02: https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/hw-reference/esp32c3/user-guide-devkitc-02.html[ESP32-C3-DevKitC-02]
-:esp32c3-hal: https://github.com/esp-rs/esp-hal/tree/main/esp32c3-hal[esp32c3-hal]
+:esp-hal: https://github.com/esp-rs/esp-hal[esp-hal]
 :espflash: https://github.com/esp-rs/espflash[espflash]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :Python: https://www.python.org/[Python]
 :RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
@@ -43,76 +44,42 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 +
 [,sh]
 ----
-cd smart-leds-fx/boards/esp32_c3_devkit_02
+cd smart-leds-fx/boards/esp32-c3-devkitc-02
 ----
 
-. Install the Rust toolchain for the ESP32-C3-DevKitC-02.
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
 +
 [,sh]
 ----
-rustup target add riscv32imc-unknown-none-elf
+direnv allow
 ----
-
-. Install `cargo-binutils` in order to convert the ELF file to the Intel HEX format.
++
+Alternatively, enter the environment with `nix develop`.
 +
 [,sh]
 ----
-cargo install cargo-binutils
-rustup component add llvm-tools-preview
-----
-
-. Install MCUboot's command-line tool for image signing and key management.
-+
-[,sh]
-----
-pip install imgtool
-----
-
-. Install `esptool`.
-+
-[,sh]
-----
-pip install esptool
-----
-
-. Download an MCUboot bootloader for the ESP32-C3.
-+
-[,sh]
-----
-curl -LO https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/mcuboot-esp32c3.bin
-----
-
-. Build the desired example using the Cargo `build` subcommand.
-+
-[,sh]
-----
-cargo build --example rgbw-neopixel-stick-high-low-soft-blink --release
-----
-
-. Convert the ELF file to a file named `app.hex` in the Intel HEX format.
-+
-[,sh]
-----
-rust-objcopy -O ihex target/riscv32imc-unknown-none-elf/release/examples/rgbw-neopixel-stick-high-low-soft-blink app.hex
-----
-
-. Create the application payload for MCUboot.
-+
-[,sh]
-----
-imgtool sign --pad --align 4 -v 0 -s auto -H 32 --pad-header -S 0x100000 app.hex app.bin
+nix develop ../..#esp32-c3-devkitc-02
 ----
 
 . Attach the ESP32-C3-DevKitC-02 to your computer using the micro USB port.
 
-. Flash the firmware image to the ESP32-C3.
+. Build, flash, and monitor an example using {espflash} with the `nix run` command and the `esp32-c3-devkitc-02-flash` app.
+The name of the example can be given as an argument.
 +
 [,sh]
 ----
-esptool.py -c esp32c3 -p /dev/ttyUSB0 -b 921600 --after no_reset write_flash -fs 4MB -fm dio -ff 40m 0x0 ./mcuboot-esp32c3.bin 0x110000 ./app.bin
+nix run ../..#esp32-c3-devkitc-02-flash -- rgbw-neopixel-stick-high-low-soft-blink
 ----
-
-. Click the reset button on the ESP32-C3-DevKitC-02 to boot the example.
++
+Alternatively, use `cargo run`, which uses the espflash runner configured in link:.cargo/config.toml[.cargo/config.toml].
++
+[,sh]
+----
+cargo run --release --example rgbw-neopixel-stick-high-low-soft-blink
+----
 
 == Examples
 
@@ -141,7 +108,7 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
-* {esp32c3-hal}
+* {esp-hal}
 * {espflash}
 * {fish}
 * {Git}
@@ -166,9 +133,8 @@ Licensed under either of
 
 at your option.
 
-© 2022 Jordan Williams
+© 2022-2026 Jordan Williams
 
 == Authors
 
 mailto:{email}[{author}]
-

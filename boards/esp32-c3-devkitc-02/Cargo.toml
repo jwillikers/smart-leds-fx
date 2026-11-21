@@ -1,0 +1,53 @@
+[package]
+name = "smart-leds-fx-esp32-c3-devkitc-02"
+version = "0.1.0"
+authors = ["Jordan Williams <jordan@jwillikers.com>"]
+description = "Examples of lighting effects for ESP32-C3-DevKitC-02"
+keywords = [
+  "dotstar",
+  "embedded",
+  "esp",
+  "esp32",
+  "esp32c3",
+  "fx",
+  "led",
+  "m4",
+  "neopixel",
+  "no-std",
+  "riscv",
+  "smart-leds",
+  "ws2812",
+]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+readme = "README.adoc"
+repository = "https://github.com/jwillikers/smart-leds-fx"
+
+[dependencies]
+esp-backtrace = { version = "0.20", features = [
+  "esp32c3",
+  "panic-handler",
+  "println",
+] }
+esp-bootloader-esp-idf = { version = "0.6", features = ["esp32c3"] }
+esp-hal = { version = "1.2", features = ["esp32c3", "exception-handler"] }
+esp-println = { version = "0.18", features = ["esp32c3"] }
+smart-leds = "0.4"
+ws2812-spi = "0.5"
+
+[dependencies.smart-leds-fx]
+path = "../../smart-leds-fx"
+version = "0.1.0"
+
+[profile.dev]
+# Rust debug builds are too slow to drive the LEDs.
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+overflow-checks = false
