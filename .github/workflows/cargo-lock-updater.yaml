@@ -1,0 +1,59 @@
+name: Cargo Lock Updater
+
+"on":
+  schedule:
+    # Once a month on the 5th
+    - cron: "0 0 5 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cargo-lock-updater:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Update smart-leds-fx Cargo lock file
+        run: nix develop ..#smart-leds-fx --command cargo update
+        working-directory: smart-leds-fx
+      - name: Update Circuit Playground Bluefruit Cargo lock file
+        run: nix develop ../..#circuit-playground-bluefruit --command cargo update
+        working-directory: boards/circuit-playground-bluefruit
+      - name: Update Circuit Playground Express Cargo lock file
+        run: nix develop ../..#circuit-playground-express --command cargo update
+        working-directory: boards/circuit-playground-express
+      - name: Update ESP32-C3-DevKitC-02 Cargo lock file
+        run: nix develop ../..#esp32-c3-devkitc-02 --command cargo update
+        working-directory: boards/esp32-c3-devkitc-02
+      - name: Update Feather M4 Express Cargo lock file
+        run: nix develop ../..#feather-m4-express --command cargo update
+        working-directory: boards/feather-m4-express
+      - name: Update FT232H Cargo lock file
+        run: nix develop ../..#ft232h --command cargo update
+        working-directory: boards/ft232h
+      - name: Update Longan Nano Cargo lock file
+        run: nix develop ../..#longan-nano --command cargo update
+        working-directory: boards/longan-nano
+      - name: Update micro:bit v2 Cargo lock file
+        run: nix develop ../..#microbit-v2 --command cargo update
+        working-directory: boards/microbit-v2
+      - name: Update Raspberry Pi Pico Cargo lock file
+        run: nix develop ../..#pico --command cargo update
+        working-directory: boards/pico
+      - name: Update QT Py RP2040 Cargo lock file
+        run: nix develop ../..#qt-py-rp2040 --command cargo update
+        working-directory: boards/qt-py-rp2040
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          assignees: ${{ github.repository_owner }}
+          branch: "update/cargo-lock"
+          commit-message: "chore(deps): Update Cargo lock files"
+          labels: |
+            automated
+            dependencies
+          title: "chore(deps): Update Cargo lock files"
+          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}

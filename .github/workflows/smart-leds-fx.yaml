@@ -1,0 +1,41 @@
+name: Check smart-leds-fx
+
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/smart-leds-fx.yaml
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/**
+  push:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/smart-leds-fx.yaml
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/**
+  workflow_dispatch:
+
+jobs:
+  check-smart-leds-fx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Test
+        run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-test
+      - name: Lint with Clippy
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-clippy
+      - name: Build documentation
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-doc
+      - name: Check licenses, bans, and sources with cargo-deny
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-deny
+      - name: Audit dependencies for security vulnerabilities with cargo-audit
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-audit

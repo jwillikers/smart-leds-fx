@@ -1,0 +1,53 @@
+name: Build Circuit Playground Bluefruit
+
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-circuit-playground-bluefruit.yaml
+      - .justfile
+      - boards/circuit-playground-bluefruit/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  push:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-circuit-playground-bluefruit.yaml
+      - .justfile
+      - boards/circuit-playground-bluefruit/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  workflow_dispatch:
+
+jobs:
+  build-circuit-playground-bluefruit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Build
+        run: nix build --print-build-logs .#circuit-playground-bluefruit
+      - name: Upload firmware
+        uses: actions/upload-artifact@v7
+        with:
+          name: smart-leds-fx-circuit-playground-bluefruit
+          path: result/bin/
+  check-circuit-playground-bluefruit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Lint with Clippy
+        run: nix build --print-build-logs .#checks.x86_64-linux.circuit-playground-bluefruit-clippy
+      - name: Check licenses, bans, and sources with cargo-deny
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.circuit-playground-bluefruit-deny
+      - name: Audit dependencies for security vulnerabilities with cargo-audit
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.circuit-playground-bluefruit-audit

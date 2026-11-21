@@ -1,0 +1,53 @@
+name: Build micro:bit v2
+
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-microbit-v2.yaml
+      - .justfile
+      - boards/microbit-v2/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  push:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-microbit-v2.yaml
+      - .justfile
+      - boards/microbit-v2/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  workflow_dispatch:
+
+jobs:
+  build-microbit-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Build
+        run: nix build --print-build-logs .#microbit-v2
+      - name: Upload firmware
+        uses: actions/upload-artifact@v7
+        with:
+          name: smart-leds-fx-microbit-v2
+          path: result/bin/
+  check-microbit-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Lint with Clippy
+        run: nix build --print-build-logs .#checks.x86_64-linux.microbit-v2-clippy
+      - name: Check licenses, bans, and sources with cargo-deny
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.microbit-v2-deny
+      - name: Audit dependencies for security vulnerabilities with cargo-audit
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.microbit-v2-audit
