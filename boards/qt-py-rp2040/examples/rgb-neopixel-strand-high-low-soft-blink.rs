@@ -1,30 +1,29 @@
 #![no_std]
 #![no_main]
 
-use adafruit_qt_py_rp2040::entry;
-use embedded_hal::timer::CountDown;
-use fugit::Duration;
+use embedded_hal_0_2::timer::CountDown;
+use fugit::MicrosDurationU32;
 use panic_halt as _;
-use adafruit_qt_py_rp2040::hal::{pac, Timer, Watchdog};
-use adafruit_qt_py_rp2040::hal::prelude::*;
-use adafruit_qt_py_rp2040::hal::{sio::Sio};
-use adafruit_qt_py_rp2040::hal::clocks::init_clocks_and_plls;
-use adafruit_qt_py_rp2040::Pins;
-use adafruit_qt_py_rp2040::XOSC_CRYSTAL_FREQ;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, RGB,
+    RGB, SmartLedsWrite,
+    hsv::{Hsv, hsv2rgb},
 };
 use smart_leds_fx::iterators::BrightnessRange;
+use smart_leds_fx_qt_py_rp2040::Pins;
+use smart_leds_fx_qt_py_rp2040::XOSC_CRYSTAL_FREQ;
+use smart_leds_fx_qt_py_rp2040::entry;
+use smart_leds_fx_qt_py_rp2040::hal::clocks::init_clocks_and_plls;
+use smart_leds_fx_qt_py_rp2040::hal::prelude::*;
+use smart_leds_fx_qt_py_rp2040::hal::sio::Sio;
+use smart_leds_fx_qt_py_rp2040::hal::{Timer, Watchdog, pac};
 use ws2812_pio::Ws2812;
 
 use smart_leds_fx::colors::RED;
-use smart_leds_fx::colors::{HsColor, CHRISTMAS_GREEN};
-
+use smart_leds_fx::colors::{CHRISTMAS_GREEN, HsColor};
 
 #[entry]
 fn main() -> ! {
-    const DELAY: Duration<u32, 1, 1_000_000> = Duration::<u32, 1, 1_000_000>::from_ticks(15_000u32);
+    const DELAY: MicrosDurationU32 = MicrosDurationU32::millis(15);
     const FIRST_LED_COLOR: HsColor<u8> = CHRISTMAS_GREEN;
     const SECOND_LED_COLOR: HsColor<u8> = RED;
     const NUM_LEDS: usize = 30;
@@ -44,8 +43,8 @@ fn main() -> ! {
         &mut pac.RESETS,
         &mut watchdog,
     )
-        .ok()
-        .unwrap();
+    .ok()
+    .unwrap();
 
     let sio = Sio::new(pac.SIO);
 
@@ -56,11 +55,11 @@ fn main() -> ! {
         &mut pac.RESETS,
     );
 
-    let timer = Timer::new(pac.TIMER, &mut pac.RESETS);
+    let timer = Timer::new(pac.TIMER, &mut pac.RESETS, &clocks);
     let mut delay = timer.count_down();
 
     // GPIO 26
-    let data_pin = pins.a3.into_mode();
+    let data_pin = pins.a3.into_function();
     let (mut pio, sm0, _, _, _) = pac.PIO0.split(&mut pac.RESETS);
     let mut ws = Ws2812::new(
         data_pin,
@@ -84,7 +83,7 @@ fn main() -> ! {
             });
             let mut data = [first_rgb; NUM_LEDS];
             for led in data.iter_mut().skip(1).step_by(2) {
-                *led = second_rgb.clone();
+                *led = second_rgb;
             }
             ws.write(data.iter().cloned()).unwrap();
             delay.start(DELAY);
