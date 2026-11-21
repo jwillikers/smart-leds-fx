@@ -3,15 +3,6 @@ name: Build ESP32-C3-DevKitC-02
 "on":
   pull_request:
     branches: ["main"]
-    paths:
-      - '*.nix'
-      - .github/workflows/build-esp32-c3-devkitc-02.yaml
-      - .justfile
-      - boards/esp32-c3-devkitc-02/**
-      - deny.toml
-      - flake.lock
-      - smart-leds-fx/Cargo.toml
-      - smart-leds-fx/src/**
   push:
     branches: ["main"]
     paths:
@@ -25,15 +16,42 @@ name: Build ESP32-C3-DevKitC-02
       - smart-leds-fx/src/**
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   build-esp32-c3-devkitc-02:
     runs-on: ubuntu-latest
     steps:
+      # Always run this job so that required status checks report on every PR,
+      # but only do the work when relevant files changed.
+      - uses: dorny/paths-filter@v4
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            relevant:
+              - '*.nix'
+              - .github/workflows/build-esp32-c3-devkitc-02.yaml
+              - .justfile
+              - boards/esp32-c3-devkitc-02/**
+              - deny.toml
+              - flake.lock
+              - smart-leds-fx/Cargo.toml
+              - smart-leds-fx/src/**
+      - name: Determine whether to run
+        id: gate
+        run: echo "run=${{ github.event_name != 'pull_request' || steps.filter.outputs.relevant == 'true' }}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
+        if: steps.gate.outputs.run == 'true'
       - uses: DeterminateSystems/nix-installer-action@v23
+        if: steps.gate.outputs.run == 'true'
       - name: Build
+        if: steps.gate.outputs.run == 'true'
         run: nix build --print-build-logs .#esp32-c3-devkitc-02
       - name: Upload firmware
+        if: steps.gate.outputs.run == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: smart-leds-fx-esp32-c3-devkitc-02
@@ -41,13 +59,35 @@ jobs:
   check-esp32-c3-devkitc-02:
     runs-on: ubuntu-latest
     steps:
+      # Always run this job so that required status checks report on every PR,
+      # but only do the work when relevant files changed.
+      - uses: dorny/paths-filter@v4
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            relevant:
+              - '*.nix'
+              - .github/workflows/build-esp32-c3-devkitc-02.yaml
+              - .justfile
+              - boards/esp32-c3-devkitc-02/**
+              - deny.toml
+              - flake.lock
+              - smart-leds-fx/Cargo.toml
+              - smart-leds-fx/src/**
+      - name: Determine whether to run
+        id: gate
+        run: echo "run=${{ github.event_name != 'pull_request' || steps.filter.outputs.relevant == 'true' }}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
+        if: steps.gate.outputs.run == 'true'
       - uses: DeterminateSystems/nix-installer-action@v23
+        if: steps.gate.outputs.run == 'true'
       - name: Lint with Clippy
+        if: steps.gate.outputs.run == 'true'
         run: nix build --print-build-logs .#checks.x86_64-linux.esp32-c3-devkitc-02-clippy
       - name: Check licenses, bans, and sources with cargo-deny
-        if: success() || failure()
+        if: steps.gate.outputs.run == 'true' && (success() || failure())
         run: nix build --print-build-logs .#checks.x86_64-linux.esp32-c3-devkitc-02-deny
       - name: Audit dependencies for security vulnerabilities with cargo-audit
-        if: success() || failure()
+        if: steps.gate.outputs.run == 'true' && (success() || failure())
         run: nix build --print-build-logs .#checks.x86_64-linux.esp32-c3-devkitc-02-audit
