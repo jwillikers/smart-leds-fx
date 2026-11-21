@@ -18,6 +18,7 @@ endif::[]
 :Git: https://git-scm.com/[Git]
 :libftdi: https://www.intra2net.com/en/developer/libftdi/index.php[libftdi]
 :Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
 :NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
 :RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
 :Rust: https://www.rust-lang.org/[Rust]
@@ -41,6 +42,23 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 [,sh]
 ----
 cd smart-leds-fx/boards/ft232h
+----
+
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
++
+[,sh]
+----
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#ft232h
 ----
 
 . Install the required {libftdi} package, which conveniently provides the necessary Udev rules to access the FT232H Breakout.
@@ -99,9 +117,8 @@ Licensed under either of
 
 at your option.
 
-© 2021 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
 mailto:{email}[{author}]
-

@@ -1,0 +1,53 @@
+name: Build ESP32-C3-DevKitC-02
+
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-esp32-c3-devkitc-02.yaml
+      - .justfile
+      - boards/esp32-c3-devkitc-02/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  push:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-esp32-c3-devkitc-02.yaml
+      - .justfile
+      - boards/esp32-c3-devkitc-02/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  workflow_dispatch:
+
+jobs:
+  build-esp32-c3-devkitc-02:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Build
+        run: nix build --print-build-logs .#esp32-c3-devkitc-02
+      - name: Upload firmware
+        uses: actions/upload-artifact@v7
+        with:
+          name: smart-leds-fx-esp32-c3-devkitc-02
+          path: result/bin/
+  check-esp32-c3-devkitc-02:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Lint with Clippy
+        run: nix build --print-build-logs .#checks.x86_64-linux.esp32-c3-devkitc-02-clippy
+      - name: Check licenses, bans, and sources with cargo-deny
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.esp32-c3-devkitc-02-deny
+      - name: Audit dependencies for security vulnerabilities with cargo-audit
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.esp32-c3-devkitc-02-audit

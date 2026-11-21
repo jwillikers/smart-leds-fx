@@ -1,0 +1,53 @@
+name: Build Longan Nano
+
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-longan-nano.yaml
+      - .justfile
+      - boards/longan-nano/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  push:
+    branches: ["main"]
+    paths:
+      - '*.nix'
+      - .github/workflows/build-longan-nano.yaml
+      - .justfile
+      - boards/longan-nano/**
+      - deny.toml
+      - flake.lock
+      - smart-leds-fx/Cargo.toml
+      - smart-leds-fx/src/**
+  workflow_dispatch:
+
+jobs:
+  build-longan-nano:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Build
+        run: nix build --print-build-logs .#longan-nano
+      - name: Upload firmware
+        uses: actions/upload-artifact@v7
+        with:
+          name: smart-leds-fx-longan-nano
+          path: result/bin/
+  check-longan-nano:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Lint with Clippy
+        run: nix build --print-build-logs .#checks.x86_64-linux.longan-nano-clippy
+      - name: Check licenses, bans, and sources with cargo-deny
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.longan-nano-deny
+      - name: Audit dependencies for security vulnerabilities with cargo-audit
+        if: success() || failure()
+        run: nix build --print-build-logs .#checks.x86_64-linux.longan-nano-audit

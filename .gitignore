@@ -15,3 +15,26 @@ target/
 
 # Ignore any built binaries.
 *.bin
+*.hex
+*.uf2
+
+*.jpg~
+*.jpg-autosave.kra
+
+# direnv
+.direnv/
+
+# Nix
+result
+
+# git-hooks.nix
+/.pre-commit-config.yaml
+
+# Asciidoctor
+*.html
+
+# lychee
+.lycheecache
+
+# Embed / probe-rs logs
+logs/

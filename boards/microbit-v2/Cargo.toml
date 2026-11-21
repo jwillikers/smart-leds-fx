@@ -1,0 +1,45 @@
+[package]
+name = "smart-leds-fx-microbit-v2"
+version = "0.1.0"
+authors = ["Jordan Williams <jordan@jwillikers.com>"]
+description = "Examples of lighting effects for the BBC micro:bit v2"
+keywords = [
+  "dotstar",
+  "embedded",
+  "fx",
+  "led",
+  "microbit",
+  "neopixel",
+  "no-std",
+  "smart-leds",
+  "ws2812",
+]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+readme = "README.adoc"
+repository = "https://github.com/jwillikers/smart-leds-fx"
+
+[dependencies]
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7"
+embedded-hal = "1.0"
+microbit-v2 = "0.16"
+panic-rtt-target = "0.2"
+rtt-target = "0.6"
+smart-leds = "0.4"
+ws2812-spi = "0.5"
+
+[dependencies.smart-leds-fx]
+path = "../../smart-leds-fx"
+version = "0.1.0"
+
+[profile.dev]
+debug = true
+lto = true
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+debug = true
+lto = true
+opt-level = 3

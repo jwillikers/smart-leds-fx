@@ -1,0 +1,4 @@
+[toolchain]
+channel = "stable"
+components = ["llvm-tools-preview"]
+targets = ["riscv32imac-unknown-none-elf"]

@@ -1,0 +1,10 @@
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# Choose a default "cargo run" tool:
+# - probe-rs provides flashing and RTT via a hardware debugger
+# - gdb can be used with OpenOCD, which is configured in openocd.cfg and openocd.gdb
+runner = "probe-rs run --chip nRF52840_xxAA --protocol swd"
+# runner = "gdb -x openocd.gdb"
+rustflags = ["-C", "link-arg=-Tlink.x"]
+
+[build]
+target = "thumbv7em-none-eabihf"

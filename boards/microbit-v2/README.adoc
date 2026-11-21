@@ -1,0 +1,147 @@
+= micro:bit v2
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:cargo-embed: https://probe.rs/docs/tools/cargo-embed/[cargo-embed]
+:fish: https://fishshell.com/[fish]
+:Git: https://git-scm.com/[Git]
+:Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
+:BBC-microbit: https://microbit.org/[micro:bit]
+:Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
+:nrf-rs-microbit: https://github.com/nrf-rs/microbit/[nrf-rs/microbit]
+:probe-rs: https://probe.rs/[probe-rs]
+:Python: https://www.python.org/[Python]
+:Rouge: https://rouge.jneen.net/[Rouge]
+:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
+
+Examples of lighting effects for the {BBC-microbit} v2.
+
+== Setup
+
+The instructions provided here are meant for users of Fedora Linux.
+
+. First, clone the repository.
++
+[,sh]
+----
+git clone https://github.com/jwillikers/smart-leds-fx.git
+----
+
+. Change to the project's directory.
++
+[,sh]
+----
+cd smart-leds-fx/boards/microbit-v2
+----
+
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
++
+[,sh]
+----
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#microbit-v2
+----
+
+. Install the required Udev rules.
++
+[,sh]
+----
+wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+----
+
+. Load the new rules.
++
+[,sh]
+----
+sudo udevadm control --reload
+----
+
+. Apply the new rules.
++
+[,sh]
+----
+sudo udevadm trigger
+----
+
+. Attach your computer to the micro:bit's micro USB port.
+
+. Use cargo-embed to build, flash, and launch an example.
++
+[,sh]
+----
+cargo embed --example soft-blink-neopixel-strip
+----
+
+== Examples
+
+soft-blink-neopixel-strip:: A _{soft-blink}_ effect for a strip of 30 {Neopixel} LED's using the the SPI MOSI pin, pin #15, of the micro:bit.
+
+== Todo
+
+* Improve power consumption by using sleep modes and disabling unused peripherals.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {cargo-embed}
+* {fish}
+* {Git}
+* {Linux}
+* {nrf-rs-microbit}
+* {probe-rs}
+* {Python}
+* {Rouge}
+* {Ruby}
+* {Rust}
+* {smart-leds}
+* {ws2812-spi-rs}
+
+== Code of Conduct
+
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+Licensed under either of
+
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+
+at your option.
+
+© 2021-2026 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]

@@ -1,0 +1,209 @@
+= Adafruit QT Py RP2040 Examples
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector: https://www.adafruit.com/product/3919[Adafruit NeoPixel LED Strip with 3-pin JST PH Connector]
+:Adafruit-QT-Py-RP2040: https://www.adafruit.com/product/4900[Adafruit QT Py RP2040]
+:adafruit-qt-py-rp2040-crate: https://crates.io/crates/adafruit-qt-py-rp2040[adafruit-qt-py-rp2040]
+:Adafruit-QT-Py-RP2040-Pinouts: https://learn.adafruit.com/adafruit-qt-py-2040/pinouts[Adafruit QT Py RP2040 Pinouts]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:elf2uf2-rs: https://github.com/JoNil/elf2uf2-rs[elf2uf2-rs]
+:Git: https://git-scm.com/[Git]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:probe-rs: https://probe.rs/[probe-rs]
+:rp-hal: https://github.com/rp-rs/rp-hal[rp-hal]
+:Nix: https://nixos.org/[Nix]
+:Rust: https://www.rust-lang.org/[Rust]
+:rustup: https://rustup.rs/[rustup]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:ws2812-pio: https://github.com/rp-rs/ws2812-pio-rs[ws2812-pio]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:UF2: https://github.com/microsoft/uf2[UF2]
+
+Examples of lighting effects for the {Adafruit-QT-Py-RP2040}.
+
+== Setup
+
+. First, clone the repository.
++
+[,sh]
+----
+git clone https://github.com/jwillikers/smart-leds-fx.git
+----
+
+. Change to the board's directory.
++
+[,sh]
+----
+cd smart-leds-fx/boards/qt-py-rp2040
+----
+
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
++
+[,sh]
+----
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#qt-py-rp2040
+----
+
+== Pins
+
+The examples refer to the pins of the QT Py RP2040 by the names printed on the board, such as `a3`.
+These names are defined in link:src/lib.rs[src/lib.rs], which takes the place of the {adafruit-qt-py-rp2040-crate} board support package.
+The definitions are adapted from version 0.8.0 of that crate, so the pin names, the boot loader for the GD25Q64CS flash chip, and the 12 MHz crystal frequency are all identical.
+
+The board support package depends on rp2040-hal 0.10.
+The newest release of {ws2812-pio}, 0.9, requires rp2040-hal 0.11 and is the first release that supports smart-leds 0.4.
+Defining the pins locally allows the examples to use rp2040-hal 0.11 and the latest releases of ws2812-pio and smart-leds while keeping the same pin names.
+In code, import the pins and other definitions from this crate instead of the board support package, as shown below.
+
+[,rust]
+----
+use smart_leds_fx_qt_py_rp2040::{entry, hal, pac, Pins, XOSC_CRYSTAL_FREQ};
+----
+
+The table below lists each pin name, the RP2040 GPIO that it refers to, and the type alias available for the pin's function.
+Refer to the {Adafruit-QT-Py-RP2040-Pinouts} for the physical location of each pin.
+
+[cols="1m,1,2"]
+|===
+|Name |GPIO |Alias
+
+|mosi
+|GPIO3
+|`Mosi`: SPI0 TX, no pull
+
+|miso
+|GPIO4
+|`Miso`: SPI0 RX, no pull
+
+|rx
+|GPIO5
+|`UartRx`: UART1 RX, no pull
+
+|sclk
+|GPIO6
+|`Sclk`: SPI0 SCK, no pull
+
+|neopixel_power
+|GPIO11
+|
+
+|neopixel_data
+|GPIO12
+|
+
+|tx
+|GPIO20
+|`UartTx`: UART1 TX, no pull
+
+|button
+|GPIO21
+|
+
+|sda1
+|GPIO22
+|`Sda1`: I2C1 SDA, pull-up
+
+|scl1
+|GPIO23
+|`Scl1`: I2C1 SCL, pull-up
+
+|sda
+|GPIO24
+|`Sda`: I2C0 SDA, pull-up
+
+|scl
+|GPIO25
+|`Scl`: I2C0 SCL, pull-up
+
+|a3
+|GPIO26
+|
+
+|a2
+|GPIO27
+|
+
+|a1
+|GPIO28
+|
+
+|a0
+|GPIO29
+|
+|===
+
+== Program
+
+The Adafruit QT Py RP2040 can be programmed directly through its micro USB port.
+{elf2uf2-rs} makes it incredibly easy to flash the Adafruit QT Py RP2040 using its micro USB port.
+
+. While holding the `BOOTSEL` button, attach the Adafruit QT Py RP2040 to your computer using the micro USB port.
+
+. Flash the board using Cargo's `run` subcommand.
++
+[,sh]
+----
+cargo run --example rgb-neopixel-strand-high-low-soft-blink
+----
+
+== Examples
+
+rgb-neopixel-strand-high-low-soft-blink:: A _{soft-blink}_ effect for an {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-PH-Connector} containing 30 RGB {NeoPixel}s.
+The data line of the strip connects to the `A3` pin, GPIO26, of the Adafruit QT Py RP2040, which is driven by the PIO0 peripheral using {ws2812-pio}.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {adafruit-qt-py-rp2040-crate}
+* {elf2uf2-rs}
+* {Git}
+* {probe-rs}
+* {rp-hal}
+* {Rust}
+* {smart-leds}
+* {ws2812-pio}
+
+== Code of Conduct
+
+Refer to the project's link:../../CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+Licensed under either of
+
+* Apache License, Version 2.0 (link:../../LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:../../LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+
+at your option.
+
+© 2022-2026 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]

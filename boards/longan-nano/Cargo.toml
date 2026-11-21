@@ -1,0 +1,48 @@
+[package]
+name = "smart-leds-fx-longan-nano"
+version = "0.1.0"
+description = "A soft blink effect for the onboard NeoPixel on the Longan Nano"
+authors = ["Jordan Williams <jordan@jwillikers.com>"]
+edition = "2021"
+keywords = [
+  "dotstar",
+  "embedded",
+  "fx",
+  "led",
+  "neopixel",
+  "no-std",
+  "smart-leds",
+  "ws2812",
+]
+license = "MIT OR Apache-2.0"
+readme = "README.adoc"
+repository = "https://github.com/jwillikers/smart-leds-fx"
+
+[dependencies]
+# The GD32VF103 HAL only supports embedded-hal 0.2.
+# This restricts smart-leds and ws2812-spi to the versions that support embedded-hal 0.2.
+embedded-hal = "0.2"
+embedded-time = "0.12"
+longan-nano = "0.3"
+panic-halt = "1.0"
+# riscv-rt 0.12 and later conflict with the ECLIC interrupt setup in gd32vf103xx-hal.
+riscv-rt = "0.11"
+rtt-target = { version = "0.3", features = ["riscv"] }
+smart-leds = "0.3"
+ws2812-spi = "0.4"
+
+[dependencies.smart-leds-fx]
+path = "../../smart-leds-fx"
+version = "0.1.0"
+
+[profile.dev]
+codegen-units = 1
+debug = true
+lto = true
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+debug = true
+lto = true
+opt-level = 3

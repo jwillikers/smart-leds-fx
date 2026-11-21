@@ -1,0 +1,31 @@
+# Configuration for cargo-deny, which is shared by every board and the library.
+# See https://embarkstudios.github.io/cargo-deny/checks/cfg.html
+
+[licenses]
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "MIT",
+  "Unicode-3.0",
+  "Zlib",
+]
+confidence-threshold = 0.8
+# This configuration is shared between boards, so not every license is used by each one.
+unused-allowed-license = "allow"
+
+[bans]
+# Embedded HAL ecosystems commonly pull in multiple versions of the same crate.
+multiple-versions = "allow"
+# The smart-leds-fx library is a path dependency of each board.
+wildcards = "allow"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-git = [
+  # ws2812-timer-delay is pinned to an unreleased revision for smart-leds 0.4 support.
+  "https://github.com/smart-leds-rs/ws2812-timer-delay-rs",
+]

@@ -1,0 +1,326 @@
+= Longan Nano
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-Connector: https://www.adafruit.com/product/4801[Adafruit NeoPixel LED Strip with 3-pin JST Connector]
+:Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:dfu-util: http://dfu-util.sourceforge.net/[dfu-util]
+:Fedora: https://getfedora.org/[Fedora]
+:Fedora-Silverblue: https://silverblue.fedoraproject.org/[Fedora Silverblue]
+:fish: https://fishshell.com/[fish]
+:GD32VF103CBT6: https://www.gigadevice.com/microcontroller/gd32vf103cbt6/[GD32VF103CBT6]
+:GDB: https://www.gnu.org/software/gdb/[GDB]
+:Git: https://git-scm.com/[Git]
+:Linux: https://www.linuxfoundation.org/[Linux]
+:Nix: https://nixos.org/[Nix]
+:Longan-Nano-HAL: https://github.com/riscv-rust/longan-nano[Longan Nano HAL]
+:NeoPixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[NeoPixel]
+:NeoPixel-Triple-Ring-Board: https://www.adafruit.com/product/4222[NeoPixel Triple-Ring Board]
+:OpenOCD: https://openocd.org/[OpenOCD]
+:RGBW-NeoPixel-Stick: https://www.adafruit.com/product/2867[RGBW NeoPixel Stick]
+:RISC-V-GNU-Compiler-Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain[RISC-V GNU Compiler Toolchain]
+:Python: https://www.python.org/[Python]
+:rustup: https://rustup.rs/[rustup]
+:Rouge: https://rouge.jneen.net/[Rouge]
+:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:Rust: https://www.rust-lang.org/[Rust]
+:RV-Link: https://gitee.com/zoomdy/RV-LINK[RV-LINK]
+:SiPEED-Longan-Nano: http://longan.sipeed.com/en/[SiPEED Longan Nano]
+:SiPEED-RISC-V-Debugger: https://www.seeedstudio.com/Sipeed-USB-JTAG-TTL-RISC-V-Debugger-ST-Link-V2-STM8-STM32-Simulator-p-2910.html[SiPEED RISC-V Debugger]
+:smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
+:soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
+:udev: https://www.freedesktop.org/software/systemd/man/udev.html[udev]
+:ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
+
+Examples of lighting effects for the {SiPEED-Longan-Nano} v1.0.
+
+== Getting Started
+
+. First, clone the repository.
++
+[,sh]
+----
+git clone https://github.com/jwillikers/neopixel-soft-blink.git
+----
+
+. Change to the project's directory.
++
+[,sh]
+----
+cd smart-leds-fx/boards/longan-nano
+----
+
+. Load the development environment for the board.
+{Nix} provides the toolchain and the tools to flash the board.
+Refer to the link:../../README.adoc#develop[Develop section] of the project's README for instructions on setting up Nix and direnv.
+With direnv, allow the environment to load automatically when entering the directory.
++
+[,sh]
+----
+direnv allow
+----
++
+Alternatively, enter the environment with `nix develop`.
++
+[,sh]
+----
+nix develop ../..#longan-nano
+----
+
+. To debug with GDB and <<OpenOCD>>, build the latest {RISC-V-GNU-Compiler-Toolchain}.
+This isn't necessary to build and flash the examples.
+
+.. Clone the {RISC-V-GNU-Compiler-Toolchain} repository.
++
+[,sh]
+----
+git clone https://github.com/riscv-collab/riscv-gnu-toolchain.git
+----
+
+.. Change to the project directory.
++
+[,sh]
+----
+cd riscv-gnu-toolchain
+----
+
+.. Install the dependencies required to build the toolchain.
++
+[,sh]
+----
+sudo dnf -y install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel gawk bison flex texinfo patchutils gcc gcc-c++ zlib-devel expat-devel
+----
+
+.. Configure.
+Here, the `--prefix` option installs everything under the `~/.local` directory.
++
+[,sh]
+----
+./configure --prefix=$HOME/.local/riscv
+----
+
+.. Build.
++
+[,sh]
+----
+make
+----
+
+. Add the installation `bin` directory to your `PATH`.
++
+[,sh]
+----
+fish_add_path ~/.local/riscv/bin
+----
+
+Instructions are provided for using <<dfu-util>>, <<cargo-embed>>, and <<OpenOCD>> to flash an example to the Longan Nano.
+The latter two can also be used for debugging.
+
+== dfu-util
+
+The {dfu-util} tool can be used to flash the Longan Nano directly over the USB-C port.
+The `longan-nano-flash` Nix flake app builds and flashes an example with dfu-util in one step.
+Put the Longan Nano in bootloader mode as described below and then run the app with the name of the example.
+
+[,sh]
+----
+nix run ../..#longan-nano-flash -- rgbw-neopixel-stick-soft-blink
+----
+
+The individual steps to do this manually are described here.
+
+. Build the example.
++
+[,sh]
+----
+cargo build --example rgbw-neopixel-stick-soft-blink
+----
+
+. Create a binary from the example's ELF file.
++
+[,sh]
+----
+rust-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
+----
+
+. Attach the Longan Nano's USB-C port to your computer.
+
+. Put the Longan Nano in bootloader mode by holding the `BOOT0` button pressed while pressing and releasing the reset button.
+
+. Now flash the `.bin` file onto the Longan Nano using the `dfu-util` program.
++
+[,sh]
+----
+sudo dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
+----
+
+== cargo-embed
+
+{cargo-embed} simplifies flashing and other interactions with microcontrollers over various types of debug probes.
+The J-Link, {SiPEED-RISC-V-Debugger}, and {RV-LINK} are all supported.
+With a debugger attached, just use {cargo-embed} to flash the desired example to the Longan Nano.
+
+=== Install
+
+. Install necessary system packages.
++
+[,sh]
+----
+sudo dnf -y install libftdi-devel libusbx-devel systemd-devel
+----
+
+. Install the required {udev} rules.
++
+[,sh]
+----
+wget -LqO - https://probe.rs/files/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+----
+
+. Load the new rules.
++
+[,sh]
+----
+sudo udevadm control --reload
+----
+
+. Apply the new rules.
++
+[,sh]
+----
+sudo udevadm trigger
+----
+
+=== Flash
+
+==== DFU-Util
+
+[,sh]
+----
+lsusb
+Bus 001 Device 004: ID 27c6:533c Shenzhen Goodix Technology Co.,Ltd. FingerPrint
+----
+
+./etc/udev/rules.d/longan-nano.rules
+[source,udev]
+----
+# Longan Nano v1.1
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="27c6", ATTR{idProduct}=="533c", MODE="0666"
+----
+
+. Build the example.
++
+[,sh]
+----
+cargo build --example rgbw-neopixel-stick-soft-blink
+----
+
+[,sh]
+----
+rust-objcopy -O binary target/riscv32imac-unknown-none-elf/debug/examples/rgbw-neopixel-stick-soft-blink firmware.bin
+----
+
+. Enter bootloader mode.
+
+. Send the payload.
++
+[,sh]
+----
+dfu-util -a 0 -s 0x08000000:leave -D firmware.bin
+----
+
+==== Cargo Embed
+
+Note that this isn't working yet.
+
+. First, attach the debug probe to the pins opposite the USB-C port of the Longan Nano.
+
+. Pass the desired example to the `cargo embed` subcommand.
++
+[,sh]
+----
+cargo embed --example rgbw-neopixel-stick-soft-blink
+----
+
+== OpenOCD
+
+Flashing and debugging can be done using {OpenOCD} and {GDB} with debug probe such as a J-Link, {SiPEED-RISC-V-Debugger}, or {RV-LINK}.
+
+. First, attach the debug probe to the pins opposite the USB-C port of the Longan Nano.
+
+. With a debug probe connected, start OpenOCD with the configuration for the appropriate probe as detailed below.
++
+SiPEED RISC-V Debugger:: Use the `sipeed-jtag.cfg` for the {SiPEED-RISC-V-Debugger}.
++
+[,sh]
+----
+openocd -f sipeed-jtag.cfg -f target/gd32vf103.cfg
+----
+
+RV-LINK:: todo I haven't test this myself yet, but instructions for using the {RV-LINK} can be found https://github.com/riscv-rust/longan-nano#using-rv-link-for-flashing-and-debugging[here].
+
+. Now, launch GDB using the `cargo run` subcommand and the desired example.
++
+[,sh]
+----
+cargo run --example rgbw-neopixel-stick-soft-blink
+----
+
+== Examples
+
+rgbw-neopixel-stick-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
+rgbw-neopixel-stick-high-low-soft-blink:: A _{soft-blink}_ effect for an {RGBW-NeoPixel-Stick} with 8 RGBW {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
+Each LED alternates in color and the rise and fall of the soft blink effect.
+rgb-neopixel-triple-ring-board-soft-blink:: A _{soft-blink}_ effect for an {NeoPixel-Triple-Ring-Board} with 44 RGB {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
+soft-blink-neopixel-strip:: A _{soft-blink}_ effect for a {Adafruit-NeoPixel-LED-Strip-with-3-pin-JST-Connector} with 30 RGB {NeoPixel}s using the SPI MOSI pin, pin A7, of the Longan Nano.
+
+== Todo
+
+* Improve power consumption by using sleep modes and disabling unused peripherals.
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* {Asciidoctor-link}
+* {dfu-util}
+* {Fedora}
+* {Fedora-Silverblue}
+* {fish}
+* {GDB}
+* {Git}
+* {Linux}
+* {longan-nano-hal}
+* {OpenOCD}
+* {Python}
+* {Rouge}
+* {Ruby}
+* {Rust}
+* {smart-leds}
+* {ws2812-spi-rs}
+
+== Code of Conduct
+
+Refer to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
+
+== License
+
+This repository is licensed under the https://www.gnu.org/licenses/gpl-3.0.html[GPLv3], a copy of which is provided in the link:LICENSE.adoc[license file].
+
+© 2021-2026 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]
