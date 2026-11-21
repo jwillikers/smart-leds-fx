@@ -3,12 +3,6 @@ name: Check smart-leds-fx
 "on":
   pull_request:
     branches: ["main"]
-    paths:
-      - '*.nix'
-      - .github/workflows/smart-leds-fx.yaml
-      - deny.toml
-      - flake.lock
-      - smart-leds-fx/**
   push:
     branches: ["main"]
     paths:
@@ -19,23 +13,46 @@ name: Check smart-leds-fx
       - smart-leds-fx/**
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   check-smart-leds-fx:
     runs-on: ubuntu-latest
     steps:
+      # Always run this job so that required status checks report on every PR,
+      # but only do the work when relevant files changed.
+      - uses: dorny/paths-filter@v4
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            relevant:
+              - '*.nix'
+              - .github/workflows/smart-leds-fx.yaml
+              - deny.toml
+              - flake.lock
+              - smart-leds-fx/**
+      - name: Determine whether to run
+        id: gate
+        run: echo "run=${{ github.event_name != 'pull_request' || steps.filter.outputs.relevant == 'true' }}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
+        if: steps.gate.outputs.run == 'true'
       - uses: DeterminateSystems/nix-installer-action@v23
+        if: steps.gate.outputs.run == 'true'
       - name: Test
+        if: steps.gate.outputs.run == 'true'
         run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-test
       - name: Lint with Clippy
-        if: success() || failure()
+        if: steps.gate.outputs.run == 'true' && (success() || failure())
         run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-clippy
       - name: Build documentation
-        if: success() || failure()
+        if: steps.gate.outputs.run == 'true' && (success() || failure())
         run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-doc
       - name: Check licenses, bans, and sources with cargo-deny
-        if: success() || failure()
+        if: steps.gate.outputs.run == 'true' && (success() || failure())
         run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-deny
       - name: Audit dependencies for security vulnerabilities with cargo-audit
-        if: success() || failure()
+        if: steps.gate.outputs.run == 'true' && (success() || failure())
         run: nix build --print-build-logs .#checks.x86_64-linux.smart-leds-fx-audit
