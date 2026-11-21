@@ -2,30 +2,22 @@
 #![no_std]
 
 use bsp::entry;
-use defmt::*;
+use bsp::hal::{clocks, gpio::FunctionSpi, pac, prelude::*, sio::Sio, spi::Spi, watchdog};
 use defmt::debug_assert_ne;
+use defmt::*;
 use defmt_rtt as _;
 use embedded_hal::spi::MODE_0;
-use panic_probe as _;
-use fugit::RateExtU32;
 use fugit::MicrosDurationU32;
-use rp_pico as bsp;
-use bsp::hal::{
-    clocks,
-    prelude::*,
-    gpio::FunctionSpi,
-    pac,
-    sio::Sio,
-    spi::Spi,
-    watchdog,
-};
+use fugit::RateExtU32;
+use panic_probe as _;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, White, RGB, RGBW,
+    RGB, RGBW, SmartLedsWrite, White,
+    hsv::{Hsv, hsv2rgb},
 };
 use smart_leds_fx::colors::HsColor;
 use smart_leds_fx::colors::RESTFUL_ORANGE;
 use smart_leds_fx::iterators::BrightnessRange;
+use smart_leds_fx_pico as bsp;
 use ws2812_spi::Ws2812;
 
 const SYS_HZ: u32 = 125_000_000_u32;
@@ -34,7 +26,7 @@ const SYS_HZ: u32 = 125_000_000_u32;
 fn main() -> ! {
     info!("Program start");
 
-    const DELAY: MicrosDurationU32 =  MicrosDurationU32::millis(8);
+    const DELAY: MicrosDurationU32 = MicrosDurationU32::millis(8);
     const LED_COLOR: HsColor<u8> = RESTFUL_ORANGE;
     const NUM_LEDS: usize = 8;
     debug_assert_ne!(NUM_LEDS, 0);
@@ -52,7 +44,7 @@ fn main() -> ! {
     //
     // Our default is 12 MHz crystal input, 125 MHz system clock
     let clocks = clocks::init_clocks_and_plls(
-        rp_pico::XOSC_CRYSTAL_FREQ,
+        smart_leds_fx_pico::XOSC_CRYSTAL_FREQ,
         pac.XOSC,
         pac.CLOCKS,
         pac.PLL_SYS,
@@ -69,7 +61,7 @@ fn main() -> ! {
     let sio = Sio::new(pac.SIO);
 
     // Set the pins up according to their function on this particular board
-    let pins = rp_pico::Pins::new(
+    let pins = smart_leds_fx_pico::Pins::new(
         pac.IO_BANK0,
         pac.PADS_BANK0,
         sio.gpio_bank0,
@@ -84,7 +76,7 @@ fn main() -> ! {
         &mut pac.RESETS,
         SYS_HZ.Hz(),
         3_000_000u32.Hz(),
-        &MODE_0,
+        MODE_0,
     );
 
     let mut ws = Ws2812::new_sk6812w(spi);

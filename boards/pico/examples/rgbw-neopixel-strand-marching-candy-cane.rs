@@ -2,31 +2,28 @@
 #![no_main]
 
 use bsp::entry;
-use defmt::*;
 use defmt::debug_assert_ne;
+use defmt::*;
 use defmt_rtt as _;
 use embedded_hal::spi::MODE_0;
-use embedded_hal_0_2::adc::OneShot;
 use fugit::RateExtU32;
 use panic_probe as _;
-use rp_pico as bsp;
+use smart_leds_fx_pico as bsp;
 
 use bsp::hal::{
     adc::{Adc, AdcPin},
-    clocks,
+    clocks, gpio, pac,
     prelude::*,
-    gpio,
-    pac,
     sio::Sio,
     spi::Spi,
     watchdog,
 };
 use movavg::MovAvg;
 use smart_leds::{
-    hsv::{hsv2rgb, Hsv},
-    SmartLedsWrite, White, RGB, RGBW,
+    RGB, RGBW, SmartLedsWrite, White,
+    hsv::{Hsv, hsv2rgb},
 };
-use smart_leds_fx::colors::{ HsColor, RED };
+use smart_leds_fx::colors::{HsColor, RED};
 use ws2812_spi::Ws2812;
 
 const SYS_HZ: u32 = 125_000_000_u32;
@@ -39,7 +36,7 @@ fn main() -> ! {
 
     const DELAY: u32 = 100u32;
     const SECOND_LED_COLOR: HsColor<u8> = RED;
-    const NUM_LEDS: usize = 450;
+    const NUM_LEDS: usize = 743;
     debug_assert_ne!(NUM_LEDS, 0);
 
     // Grab our singleton objects
@@ -76,8 +73,7 @@ fn main() -> ! {
     );
 
     // Setup a delay for the LED blink signals:
-    let mut delay =
-        cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
+    let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
 
     // These are implicitly used by the spi driver if they are in the correct mode
     let spi_sclk: gpio::Pin<_, gpio::FunctionSpi, gpio::PullNone> = pins.gpio6.reconfigure();
@@ -87,7 +83,7 @@ fn main() -> ! {
         &mut pac.RESETS,
         SYS_HZ.Hz(),
         3_000_000u32.Hz(),
-        &MODE_0,
+        MODE_0,
     );
 
     let mut ws = Ws2812::new_sk6812w(spi);
@@ -113,7 +109,7 @@ fn main() -> ! {
     let mut data = [first_rgbw; NUM_LEDS];
     for slice in data.chunks_mut(9).step_by(2) {
         for led in slice.iter_mut() {
-            *led = second_rgbw.clone();
+            *led = second_rgbw;
         }
     }
 
@@ -141,15 +137,15 @@ fn main() -> ! {
                     let led = slice.get_mut(index);
                     if let Some(led) = led {
                         if *led == first_rgbw {
-                            *led = second_rgbw.clone();
+                            *led = second_rgbw;
                         } else {
-                            *led = first_rgbw.clone();
+                            *led = first_rgbw;
                         }
                     }
                 }
                 ws.write(data.iter().cloned()).unwrap();
                 delay.delay_ms(DELAY);
-                index = index + 1;
+                index += 1;
             }
             // for led in data.iter_mut() {
             //     if *led == second_rgbw {
