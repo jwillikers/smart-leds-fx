@@ -10,18 +10,29 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :Asciidoctor-link: https://asciidoctor.org[Asciidoctor]
+:direnv: https://direnv.net/[direnv]
 :fish: https://fishshell.com/[fish]
 :Git: https://git-scm.com/[Git]
+:just: https://just.systems/[just]
 :Linux: https://www.linuxfoundation.org/[Linux]
 :Neopixel: https://learn.adafruit.com/adafruit-neopixel-uberguide[Neopixel]
-:Python: https://www.python.org/[Python]
-:rustup: https://rustup.rs/[rustup]
-:Rouge: https://rouge.jneen.net/[Rouge]
-:Ruby: https://www.ruby-lang.org/en/[Ruby]
+:nix: https://nixos.org/[Nix]
+:nix-direnv: https://github.com/nix-community/nix-direnv[nix-direnv]
 :Rust: https://www.rust-lang.org/[Rust]
 :smart-leds: https://github.com/smart-leds-rs/smart-leds[smart-leds]
 :soft-blink: https://en.wikipedia.org/wiki/Pulse-width_modulation#Soft-blinking_LED_indicator[soft blink]
 :ws2812-spi-rs: https://github.com/smart-leds-rs/ws2812-spi-rs[ws2812-spi-rs]
+
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/smart-leds-fx.yaml/badge.svg[smart-leds-fx, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/smart-leds-fx.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-circuit-playground-bluefruit.yaml/badge.svg[Circuit Playground Bluefruit Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-circuit-playground-bluefruit.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-circuit-playground-express.yaml/badge.svg[Circuit Playground Express Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-circuit-playground-express.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-esp32-c3-devkitc-02.yaml/badge.svg[ESP32-C3-DevKitC-02 Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-esp32-c3-devkitc-02.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-feather-m4-express.yaml/badge.svg[Feather M4 Express Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-feather-m4-express.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-ft232h.yaml/badge.svg[FT232H Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-ft232h.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-longan-nano.yaml/badge.svg[Longan Nano Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-longan-nano.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-microbit-v2.yaml/badge.svg[micro:bit v2 Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-microbit-v2.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-pico.yaml/badge.svg[Raspberry Pi Pico Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-pico.yaml]
+image:https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-qt-py-rp2040.yaml/badge.svg[QT Py RP2040 Build, link=https://github.com/jwillikers/smart-leds-fx/actions/workflows/build-qt-py-rp2040.yaml]
 
 A lighting effects library built on the {smart-leds} library.
 
@@ -31,11 +42,38 @@ As of right now, the only effect is a simple {soft-blink}.
 
 == Examples
 
-Examples for several boards cna be found in the link:boards[boards] directory.
+Examples for several boards can be found in the link:boards[boards] directory.
+Each board is a separate Cargo package with its own toolchain, dependencies, and lock file.
+The examples target the Arm, RISC-V, and x86_64 architectures.
 
-=== Setup
+== Develop
 
-. First, clone the repository.
+{Nix} is used to manage dependencies, toolchains, and development environments for the library and each board.
+This makes it possible to develop locally in an environment that is consistent with CI.
+The `nix develop` command can be used to enter or run commands in an environment with all of the necessary dependencies.
+For convenience, direnv can be used to automatically load this environment when entering the project's directory.
+The https://marketplace.visualstudio.com/items?itemName=mkhl.direnv[mkhl.direnv VSCode extension] integrates this environment in VSCode for development.
+Nix also generates the configuration for https://pre-commit.com/[pre-commit], which automates formatting and various checks when committing changes.
+Follow the instructions here to set up your development environment.
+
+. Install an implementation of {Nix}, such as https://lix.systems[Lix] used here.
++
+[,sh]
+----
+curl -sSf -L https://install.lix.systems/lix | sh -s -- install
+----
+
+. Install direnv for your system according to the https://direnv.net/docs/installation.html[direnv installation instructions].
++
+[,sh]
+----
+sudo rpm-ostree install direnv
+sudo systemctl reboot
+----
+
+. Integrate direnv with your shell by following the instructions on the https://direnv.net/docs/hook.html[direnv Setup page].
+
+. Clone the repository.
 +
 [,sh]
 ----
@@ -49,26 +87,63 @@ git clone https://github.com/jwillikers/smart-leds-fx.git
 cd smart-leds-fx
 ----
 
-. Install {rustup} and {Rust}.
+. Permit the direnv configuration for the library and the desired board or boards in the repository.
+The following command allows loading the environments for the library and all boards.
 +
 [,sh]
 ----
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+direnv allow . smart-leds-fx boards/*
 ----
 
-. Add Cargo's directory to your `PATH`.
+. Run `pre-commit install` to configure pre-commit hooks in the repository.
 +
 [,sh]
 ----
-fish_add_path ~/.cargo/bin
+pre-commit install
 ----
 
-. Install the Rust toolchain for the GD32 microcontroller, a RISC-V IMAC.
+. The {just} command runner can be used to perform common tasks, such as building and flashing the examples for a particular board.
+The top-level justfile runs Cargo in the Nix environment for the given board.
+Each board's directory also contains a justfile with recipes for that board.
 +
 [,sh]
 ----
-rustup target add riscv32imac-unknown-none-elf
+just build pico
 ----
+
+. Flash an example to a board with the `flash` recipe, which uses the board's Nix flake app.
+The example to flash can be given after the name of the board.
++
+[,sh]
+----
+just flash pico rgbw-neopixel-stick-soft-blink
+----
++
+The Nix flake apps can also be used directly.
++
+[,sh]
+----
+nix run .#pico-flash -- rgbw-neopixel-stick-soft-blink
+----
+
+. Use the `update` recipe to update the Nix flake and all of the Cargo lock files.
++
+[,sh]
+----
+just update
+----
+
+== Boards
+
+* link:boards/circuit-playground-bluefruit/README.adoc[Adafruit Circuit Playground Bluefruit]
+* link:boards/circuit-playground-express/README.adoc[Adafruit Circuit Playground Express]
+* link:boards/esp32-c3-devkitc-02/README.adoc[ESP32-C3-DevKitC-02]
+* link:boards/feather-m4-express/README.adoc[Adafruit Feather M4 Express]
+* link:boards/ft232h/README.adoc[Adafruit FT232H Breakout]
+* link:boards/longan-nano/README.adoc[Sipeed Longan Nano]
+* link:boards/microbit-v2/README.adoc[BBC micro:bit v2]
+* link:boards/pico/README.adoc[Raspberry Pi Pico]
+* link:boards/qt-py-rp2040/README.adoc[Adafruit QT Py RP2040]
 
 == Todo
 
@@ -85,12 +160,13 @@ This project is built on the hard work of countless open source contributors.
 Several of these projects are enumerated below.
 
 * {Asciidoctor-link}
+* {direnv}
 * {fish}
 * {Git}
+* {just}
 * {Linux}
-* {Python}
-* {Rouge}
-* {Ruby}
+* {Nix}
+* {nix-direnv}
 * {Rust}
 * {smart-leds}
 * {ws2812-spi-rs}
@@ -103,14 +179,13 @@ Refer to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct] for details.
 
 Licensed under either of
 
-* Apache License, Version 2.0 (link:LICENSE-APACHE[LICENSE-APACHE] or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license (link:LICENSE-MIT[LICENSE-MIT] or http://opensource.org/licenses/MIT)
+* Apache License, Version 2.0 (link:LICENSE-APACHE[LICENSE-APACHE] or https://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (link:LICENSE-MIT[LICENSE-MIT] or https://opensource.org/licenses/MIT)
 
 at your option.
 
-© 2021-2024 Jordan Williams
+© 2021-2026 Jordan Williams
 
 == Authors
 
 mailto:{email}[{author}]
-
